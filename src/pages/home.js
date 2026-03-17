@@ -12,6 +12,23 @@ import { createOddsBar } from '../components/odds-bar.js'
 import { createBetDetail } from '../components/bet-detail.js'
 
 /**
+ * Render the home hero section for unauthenticated users.
+ */
+function renderHero() {
+  if (store.isAuthenticated) return ''
+  return `
+    <div class="home-hero" role="banner">
+      <div class="home-hero__brand">
+        <span class="home-hero__mark" aria-hidden="true">H</span>
+        <h1 class="home-hero__title">${escapeHtml(t('heroTitle'))}</h1>
+      </div>
+      <p class="home-hero__sub">${escapeHtml(t('heroSub'))}</p>
+      <p class="home-hero__hint">${escapeHtml(t('heroHint'))}</p>
+    </div>
+  `
+}
+
+/**
  * Render a single bet card element.
  */
 function renderBetCard(bet, selectedId) {
@@ -168,6 +185,7 @@ export async function homePage({ params, query, container, detailPanel }) {
   // Build page shell
   const page = html`
     <div class="page page--home">
+      ${renderHero()}
       <div class="filter-bar-wrap"></div>
       <div class="bet-list" role="list" aria-live="polite" aria-label="${t('bets')}">
         ${renderSkeletons(4)}

@@ -502,6 +502,54 @@ ol {
 
 
 /* --------------------------------------------------------------------------
+   9b. Home Hero (unauthenticated)
+   -------------------------------------------------------------------------- */
+
+.home-hero {
+  padding-block-end: var(--space-xl);
+  border-block-end: 1px solid var(--border-subtle);
+  margin-block-end: var(--space-lg);
+}
+
+.home-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-block-end: var(--space-sm);
+}
+
+.home-hero__mark {
+  font-size: 24px;
+  font-weight: 700;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.home-hero__title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.home-hero__sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-block-end: var(--space-xs);
+}
+
+.home-hero__hint {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+
+/* --------------------------------------------------------------------------
    10. Filter Bar
    -------------------------------------------------------------------------- */
 
@@ -2221,37 +2269,156 @@ ol {
    -------------------------------------------------------------------------- */
 
 .mobile-redirect {
-  display: none;
+  display: flex;
   position: fixed;
   inset: 0;
   z-index: 500;
   background: var(--bg-primary);
+  background-image: radial-gradient(
+    ellipse at 50% 0%,
+    oklch(25% 0.05 160 / 0.25) 0%,
+    transparent 60%
+  );
   align-items: center;
   justify-content: center;
   padding: var(--space-2xl);
 }
 
-.mobile-redirect-card {
+.mobile-redirect__content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-2xl);
   text-align: center;
-  max-width: 360px;
+  max-width: 340px;
+  width: 100%;
 }
 
-.mobile-redirect-logo {
+.mobile-redirect__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.mobile-redirect__mark {
   font-size: 48px;
   font-weight: 700;
   background: var(--grad);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1;
 }
 
-.mobile-redirect-sub {
+.mobile-redirect__wordmark {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.mobile-redirect__pitch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mobile-redirect__headline {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.mobile-redirect__sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mobile-redirect__bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.mobile-redirect__bar {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.mobile-redirect__bar::before {
+  content: '';
+  height: 100%;
+  width: var(--yes-w);
+  background: var(--yes);
+}
+
+.mobile-redirect__bar::after {
+  content: '';
+  height: 100%;
+  width: var(--no-w);
+  background: var(--no);
+}
+
+.mobile-redirect__context {
   font-size: 13px;
   color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-surface);
+  border-radius: var(--r-pill);
+}
+
+.mobile-redirect__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-lg);
+  background: var(--telegram);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: var(--r-md);
+  text-decoration: none;
+}
+
+.mobile-redirect__cta:active {
+  background: var(--telegram-hover);
+}
+
+.mobile-redirect__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mobile-redirect__alt {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.mobile-redirect__fallback {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.mobile-redirect__link {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 
@@ -2584,6 +2751,38 @@ kbd {
   .shortcuts-overlay {
     animation: fade-in 150ms ease-out both;
   }
+
+  /* Home hero staggered reveal */
+  .home-hero > * {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fade-up 400ms var(--ease-out) forwards;
+  }
+
+  .home-hero > :nth-child(1) { animation-delay: 0ms; }
+  .home-hero > :nth-child(2) { animation-delay: 80ms; }
+  .home-hero > :nth-child(3) { animation-delay: 160ms; }
+
+  /* Mobile redirect staggered reveal */
+  .mobile-redirect__content > * {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fade-up 500ms var(--ease-out) forwards;
+  }
+
+  .mobile-redirect__content > :nth-child(1) { animation-delay: 0ms; }
+  .mobile-redirect__content > :nth-child(2) { animation-delay: 100ms; }
+  .mobile-redirect__content > :nth-child(3) { animation-delay: 200ms; }
+  .mobile-redirect__content > :nth-child(4) { animation-delay: 300ms; }
+  .mobile-redirect__content > :nth-child(5) { animation-delay: 400ms; }
+  .mobile-redirect__content > :nth-child(6) { animation-delay: 500ms; }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2672,15 +2871,11 @@ kbd {
 
 
 /* --------------------------------------------------------------------------
-   30. Mobile Redirect (<768px)
+   30. Mobile (<768px) — app-layout hidden as safety net; JS gates rendering
    -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
   .app-layout {
     display: none;
-  }
-
-  .mobile-redirect {
-    display: flex;
   }
 }

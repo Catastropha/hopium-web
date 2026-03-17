@@ -127,9 +127,20 @@ const strings = {
     browseMarkets: 'Browse Markets',
     linkNotFound: 'This link doesn\'t exist or has expired.',
 
+    // Home hero (unauthenticated)
+    heroTitle: 'Prediction Markets',
+    heroSub: 'Pick a side. Back your conviction.',
+    heroHint: 'Browse freely — log in when you\'re ready to bet.',
+
     // Mobile redirect
     mobileTitle: 'Hopium is best on Telegram',
     mobileDescription: 'Get the full experience in the Telegram app.',
+    mobileHeadline: 'Prediction markets with real stakes.',
+    mobileSub: 'Pick a side on real-world events. Win when you\'re right.',
+    mobileFooter: 'The full experience lives in Telegram.',
+    mobileNoTelegram: 'Don\'t have Telegram?',
+    mobileGetTelegram: 'Get it free',
+    mobileBetShared: 'Someone shared a prediction with you.',
 
     // 404
     notFound: 'Page not found',
