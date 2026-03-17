@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+Disallow: /profile
+Disallow: /my-bets
+Disallow: /login
+
+User-agent: GPTBot
+Allow: /
+Allow: /bet/
+Allow: /leaders
+Disallow: /profile
+Disallow: /my-bets
+Disallow: /login
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://hopium.bet/sitemap.xml

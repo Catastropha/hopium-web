@@ -4,13 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0c0d10" />
+  <meta name="color-scheme" content="dark" />
   <title>Hopium — Prediction Markets</title>
-  <meta name="description" content="Bet on real-world outcomes. Bold predictions, real stakes." />
+  <meta name="description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with Telegram Stars." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://hopium.bet/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hopium" />
+  <meta property="og:title" content="Hopium — Prediction Markets" />
+  <meta property="og:description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with Telegram Stars." />
+  <meta property="og:url" content="https://hopium.bet/" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Hopium — Prediction Markets" />
+  <meta name="twitter:description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with Telegram Stars." />
+
+  <!-- Icons & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="application-name" content="Hopium" />
+  <meta name="apple-mobile-web-app-title" content="Hopium" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Hopium",
+    "url": "https://hopium.bet",
+    "description": "Parimutuel prediction market platform. Bet on real-world outcomes in crypto, sports, politics, culture, and tech with Telegram Stars.",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript. Desktop browsers recommended.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "Hopium",
+      "url": "https://hopium.bet"
+    }
+  }
+  </script>
+
   <link rel="stylesheet" href="/src/styles/main.css" />
 </head>
 <body>
   <div id="app"></div>
+  <noscript>
+    <div style="color:#e4e6eb;background:#0c0d10;padding:48px 24px;text-align:center;font-family:system-ui;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+      <h1 style="font-size:22px;font-weight:700">Hopium — Prediction Markets</h1>
+      <p style="color:#7d818a;max-width:400px">Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with Telegram Stars.</p>
+      <p style="color:#565860;font-size:13px">This application requires JavaScript to run.</p>
+    </div>
+  </noscript>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

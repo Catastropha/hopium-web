@@ -7,6 +7,7 @@ import { CATEGORY_COLORS, MIN_BET } from '../constants.js'
 import { createOddsBar, updateOddsBar } from './odds-bar.js'
 import { createDetailSkeleton } from './skeleton.js'
 import { showToast } from './toast.js'
+import { setBetMeta } from '../utils/seo.js'
 
 /**
  * Create the bet detail panel.
@@ -33,6 +34,7 @@ export function createBetDetail(betId) {
 async function loadBet(betId, wrapper) {
   try {
     const bet = await api.get(`/v1/bet/${betId}`)
+    setBetMeta(bet)
     wrapper.innerHTML = ''
     renderDetail(bet, wrapper)
   } catch (err) {

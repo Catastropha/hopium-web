@@ -15,6 +15,9 @@ import { profilePage } from './pages/profile.js'
 import { sharePage } from './pages/share.js'
 import { loginPage } from './pages/login.js'
 import { api } from './api.js'
+import { updateRouteMeta } from './utils/seo.js'
+import { trackPageView } from './utils/analytics.js'
+import { initPerfMonitoring } from './utils/perf.js'
 
 // Mobile redirect — bail early if redirecting
 if (redirectMobile()) {
@@ -29,9 +32,17 @@ function init() {
   // Set html lang
   document.documentElement.lang = getLang()
 
+  // Error tracking — queue for any provider to consume
+  window.__hopium_errors = []
+
   window.addEventListener('unhandledrejection', (e) => {
     e.preventDefault()
+    window.__hopium_errors.push({ type: 'rejection', message: e.reason?.message || String(e.reason), stack: e.reason?.stack, ts: Date.now(), url: location.href })
     console.error('Unhandled rejection:', e.reason)
+  })
+
+  window.addEventListener('error', (e) => {
+    window.__hopium_errors.push({ type: 'error', message: e.message, filename: e.filename, lineno: e.lineno, ts: Date.now(), url: location.href })
   })
 
   // Build app shell
@@ -46,6 +57,7 @@ function init() {
         <div class="detail-panel-inner" id="detail-panel-inner"></div>
       </aside>
     </div>
+    <div id="route-announcer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
   `
 
   const sidebar = $('#sidebar')
@@ -128,8 +140,21 @@ function init() {
   // Set container for router (for 404 fallback)
   router.setContainer(mainInner)
 
+  // SEO, analytics, perf — update on every route change
+  const routeAnnouncer = $('#route-announcer')
+
+  window.addEventListener('hopium:route-change', () => {
+    const path = window.location.pathname
+    updateRouteMeta(path)
+    trackPageView(path, document.title)
+    if (routeAnnouncer) routeAnnouncer.textContent = document.title
+  })
+
   // Start router
   router.start()
+
+  // Performance monitoring
+  initPerfMonitoring()
 
   // Attempt token refresh on load if we have a refresh token but no valid access token
   if (!store.isAuthenticated && store.get('refreshToken')) {
