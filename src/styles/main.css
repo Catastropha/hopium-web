@@ -618,30 +618,7 @@ ol {
   color: var(--chip-accent);
 }
 
-/* Country select dropdown (home.js) */
-.filter-country {
-  padding: var(--space-xs) var(--space-md);
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  flex-shrink: 0;
-  appearance: none;
-  padding-inline-end: var(--space-xl);
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237d818a' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 8px) center;
-}
-
-.filter-country:hover {
-  background-color: var(--bg-hover);
-}
-
-/* Filter bar component (filter-bar.js) — country dropdown */
+/* Custom country dropdown */
 .filter-bar__country {
   position: relative;
   flex-shrink: 0;

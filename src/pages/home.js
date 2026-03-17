@@ -148,21 +148,35 @@ function renderFilterBar(activeCategory, activeCountry, countries) {
     >${escapeHtml(label)}</button>`
   }).join('')
 
-  // Country options
-  let countryOptions = `<option value="">${t('global')}</option>`
+  // Country dropdown
+  const activeFlag = activeCountry
+    ? (countries.find(c => c.code === activeCountry)?.flag_emoji || '🌍')
+    : '🌍'
+  const activeName = activeCountry
+    ? escapeHtml(localize(countries.find(c => c.code === activeCountry)?.name) || activeCountry)
+    : t('global')
+
+  let countryItems = `<button class="filter-bar__dropdown-item ${!activeCountry ? 'filter-bar__dropdown-item--selected' : ''}" data-country="" role="option" aria-selected="${!activeCountry}"><span>🌍</span><span>${t('global')}</span></button>`
   if (countries && countries.length) {
     countries.forEach((c) => {
       const name = localize(c.name)
-      const selected = c.code === activeCountry ? 'selected' : ''
-      countryOptions += `<option value="${escapeHtml(c.code)}" ${selected}>${c.flag_emoji} ${escapeHtml(name)}</option>`
+      const selected = c.code === activeCountry
+      countryItems += `<button class="filter-bar__dropdown-item ${selected ? 'filter-bar__dropdown-item--selected' : ''}" data-country="${escapeHtml(c.code)}" role="option" aria-selected="${selected}"><span>${c.flag_emoji || ''}</span><span>${escapeHtml(name)}</span></button>`
     })
   }
 
   return `
     <div class="filter-bar" role="toolbar" aria-label="${t('filters')}">
-      <select class="filter-country" aria-label="${t('global')}">
-        ${countryOptions}
-      </select>
+      <div class="filter-bar__country">
+        <button class="filter-bar__country-btn" aria-expanded="false" aria-haspopup="listbox">
+          <span class="filter-bar__country-flag">${activeFlag}</span>
+          <span class="filter-bar__country-name">${activeName}</span>
+          <svg class="filter-bar__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="filter-bar__dropdown" role="listbox" hidden>
+          ${countryItems}
+        </div>
+      </div>
       <div class="filter-chips" role="group" aria-label="${t('categoryFilter')}">
         ${categoryChips}
       </div>
@@ -359,15 +373,56 @@ export async function homePage({ params, query, container, detailPanel }) {
       // Re-render filter bar
       filterWrap.innerHTML = renderFilterBar(currentCategory, currentCountry, countries)
       fetchBets(false)
+      return
+    }
+
+    // Country dropdown toggle
+    const countryBtn = e.target.closest('.filter-bar__country-btn')
+    if (countryBtn) {
+      const dropdown = filterWrap.querySelector('.filter-bar__dropdown')
+      if (dropdown) {
+        const isOpen = !dropdown.hidden
+        dropdown.hidden = isOpen
+        countryBtn.setAttribute('aria-expanded', String(!isOpen))
+      }
+      return
+    }
+
+    // Country dropdown item select
+    const countryItem = e.target.closest('.filter-bar__dropdown-item')
+    if (countryItem) {
+      currentCountry = countryItem.dataset.country || ''
+      updateURL()
+      filterWrap.innerHTML = renderFilterBar(currentCategory, currentCountry, countries)
+      fetchBets(false)
+      return
     }
   }
 
-  // Event: country select change
-  function onCountryChange(e) {
-    if (e.target.classList.contains('filter-country')) {
-      currentCountry = e.target.value
-      updateURL()
-      fetchBets(false)
+  // Close country dropdown on outside click
+  function onDocumentClick(e) {
+    if (!e.target.closest('.filter-bar__country')) {
+      const dropdown = filterWrap.querySelector('.filter-bar__dropdown')
+      const btn = filterWrap.querySelector('.filter-bar__country-btn')
+      if (dropdown && !dropdown.hidden) {
+        dropdown.hidden = true
+        if (btn) btn.setAttribute('aria-expanded', 'false')
+      }
+    }
+  }
+
+  // Close country dropdown on Escape
+  function onFilterKeydown(e) {
+    if (e.key === 'Escape') {
+      const dropdown = filterWrap.querySelector('.filter-bar__dropdown')
+      const btn = filterWrap.querySelector('.filter-bar__country-btn')
+      if (dropdown && !dropdown.hidden) {
+        dropdown.hidden = true
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false')
+          btn.focus()
+        }
+      }
     }
   }
 
@@ -403,7 +458,8 @@ export async function homePage({ params, query, container, detailPanel }) {
   betList.addEventListener('keydown', onBetListKeydown)
   footer.addEventListener('click', onFooterClick)
   filterWrap.addEventListener('click', onFilterClick)
-  filterWrap.addEventListener('change', onCountryChange)
+  filterWrap.addEventListener('keydown', onFilterKeydown)
+  document.addEventListener('click', onDocumentClick)
   document.addEventListener('keydown', onKeydown)
 
   cleanups.push(() => {
@@ -411,7 +467,8 @@ export async function homePage({ params, query, container, detailPanel }) {
     betList.removeEventListener('keydown', onBetListKeydown)
     footer.removeEventListener('click', onFooterClick)
     filterWrap.removeEventListener('click', onFilterClick)
-    filterWrap.removeEventListener('change', onCountryChange)
+    filterWrap.removeEventListener('keydown', onFilterKeydown)
+    document.removeEventListener('click', onDocumentClick)
     document.removeEventListener('keydown', onKeydown)
   })
 
