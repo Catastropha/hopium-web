@@ -1,0 +1,44 @@
+/* Hopium Web — Focus & Accessibility */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  inset-inline-start: var(--space-lg);
+  z-index: 1000;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--yes);
+  color: var(--text-inverse);
+  font-weight: 600;
+  border-radius: var(--r-sm);
+}
+
+.skip-link:focus {
+  top: var(--space-lg);
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

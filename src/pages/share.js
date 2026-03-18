@@ -1,3 +1,4 @@
+import '../styles/share.css'
 import { html, $, mount, escapeHtml } from '../utils/dom.js'
 import { formatStars, formatDate } from '../utils/format.js'
 import { localize, t } from '../i18n.js'

@@ -1,3 +1,4 @@
+import '../styles/bet-detail.css'
 import { html, $, escapeHtml } from '../utils/dom.js'
 import { formatStars, formatStarsCompact, formatOdds, formatPercent, formatTimeRemaining, formatNumber, formatSignedStars } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
@@ -8,6 +9,7 @@ import { createOddsBar, updateOddsBar } from './odds-bar.js'
 import { createDetailSkeleton } from './skeleton.js'
 import { showToast } from './toast.js'
 import { setBetMeta } from '../utils/seo.js'
+import { shareBet } from './share-menu.js'
 
 /**
  * Create the bet detail panel.
@@ -124,7 +126,7 @@ function renderDetail(bet, wrapper) {
       <div class="bet-detail__meta">
         <span class="bet-detail__countdown">${escapeHtml(countdown)}</span>
         <span class="bet-detail__pool">${formatStarsCompact(bet.total_pool)} ${t('pool')}</span>
-        ${store.isAuthenticated ? `<button class="bet-detail__share" aria-label="${t('share')}">${t('share')}</button>` : ''}
+        <button class="bet-detail__share" aria-label="${t('share')}">${t('share')}</button>
       </div>
 
       ${resolvedHtml}
@@ -196,21 +198,11 @@ function renderDetail(bet, wrapper) {
     window.dispatchEvent(new CustomEvent('hopium:detail-close'))
   })
 
-  // Share button (POST /v1/share/)
+  // Share button — opens social share menu
   const shareBtn = el.querySelector('.bet-detail__share')
   if (shareBtn) {
-    shareBtn.addEventListener('click', async () => {
-      try {
-        const res = await api.post('/v1/share/', { type: 'bet', reference_id: bet.id })
-        if (res.share_url) {
-          await navigator.clipboard.writeText(res.share_url)
-          showToast({ message: t('copied'), type: 'success' })
-        }
-      } catch {
-        // Fallback: copy current URL
-        await navigator.clipboard.writeText(window.location.href).catch(() => {})
-        showToast({ message: t('copied'), type: 'success' })
-      }
+    shareBtn.addEventListener('click', () => {
+      shareBet(shareBtn, bet)
     })
   }
 

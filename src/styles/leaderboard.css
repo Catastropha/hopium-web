@@ -1,0 +1,164 @@
+/* Hopium Web — Leaderboard */
+
+.leaderboard-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-block-end: var(--space-xl);
+}
+
+.leaderboard-content {
+  /* container for podium + table */
+}
+
+.leaderboard-footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) 0;
+}
+
+/* Podium */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-xl);
+  margin-block-end: var(--space-2xl);
+  padding-block: var(--space-xl);
+}
+
+.podium--skeleton {
+  opacity: 0.5;
+}
+
+.podium__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.podium__medal {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.podium__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.podium__item--first .podium__avatar {
+  width: 56px;
+  height: 56px;
+  border-color: var(--cat-crypto);
+  font-size: 20px;
+}
+
+.podium__item--second .podium__avatar {
+  border-color: var(--text-secondary);
+}
+
+.podium__item--third .podium__avatar {
+  border-color: var(--bronze);
+}
+
+.podium__name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.podium__profit {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Leaderboard table */
+.leaderboard-table {
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.leaderboard-th {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  text-align: start;
+  border-block-end: 1px solid var(--border);
+}
+
+.leaderboard-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
+.leaderboard-row:hover .leaderboard-cell {
+  background: var(--bg-hover);
+}
+
+.leaderboard-row--highlight .leaderboard-cell {
+  background: var(--bg-elevated);
+}
+
+.leaderboard-cell {
+  padding: var(--space-md);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  border-block-end: 1px solid var(--border-subtle);
+  min-width: 0;
+}
+
+.leaderboard-cell--rank {
+  font-weight: 600;
+  color: var(--text-secondary);
+  width: 48px;
+}
+
+.leaderboard-cell--user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-cell--winrate {
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-cell--streak {
+  /* streak column */
+}
+
+.leaderboard-cell--profit {
+  font-weight: 600;
+  text-align: end;
+}
+
+.leaderboard-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-hover);
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}

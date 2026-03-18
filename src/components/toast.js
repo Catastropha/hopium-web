@@ -1,3 +1,4 @@
+import '../styles/toast.css'
 import { html, $ } from '../utils/dom.js'
 import { t } from '../i18n.js'
 

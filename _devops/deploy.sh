@@ -11,8 +11,8 @@ case "$ENV" in
     VITE_BOT_USERNAME="HopiumDevBot"
     ;;
   live)
-    S3_BUCKET="s3://web.hopium.bet"
-    CF_DISTRIBUTION="E68JVLPFGDAC"
+    S3_BUCKET="s3://hopium.bet"
+    CF_DISTRIBUTION="E39NTHDF6WW9DR"
     VITE_API_BASE="https://live-api.hopium.app"
     VITE_BOT_USERNAME="hopiumbetbot"
     ;;

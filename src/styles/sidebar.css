@@ -1,0 +1,164 @@
+/* Hopium Web — Sidebar */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  width: 60px;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: var(--space-xl) var(--space-lg);
+  background: var(--bg-primary);
+  border-inline-end: 1px solid var(--border);
+  z-index: 50;
+}
+
+.sidebar__logo {
+  margin-block-end: var(--space-3xl);
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__logo-img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+}
+
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+}
+
+.sidebar__item:hover {
+  background: var(--bg-hover);
+}
+
+.sidebar__item--active {
+  color: var(--yes);
+  background: var(--yes-soft);
+}
+
+.sidebar__item--active::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 28px;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--yes);
+}
+
+.sidebar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Tooltip — shared via [data-tooltip] attribute */
+.sidebar [data-tooltip] {
+  position: relative;
+}
+
+.sidebar [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  inset-inline-start: calc(100% + var(--space-sm));
+  top: 50%;
+  transform: translateY(-50%);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 60;
+  transition: opacity 150ms ease-out 400ms;
+}
+
+.sidebar [data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+.sidebar__bottom {
+  margin-block-start: auto;
+}
+
+.sidebar__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sidebar__avatar:hover {
+  background: var(--bg-hover);
+}
+
+.sidebar__login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+}
+
+.sidebar__login:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar__user-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.sidebar__balance {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--yes);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

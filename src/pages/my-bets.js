@@ -1,3 +1,6 @@
+import '../styles/bet-card.css'
+import '../styles/segmented-control.css'
+import '../styles/pnl-card.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatStarsCompact, formatSignedStars,
@@ -11,6 +14,7 @@ import { CATEGORY_COLORS } from '../constants.js'
 import { createOddsBar } from '../components/odds-bar.js'
 import { createBetDetail } from '../components/bet-detail.js'
 import { renderBetCard, renderSkeletons } from './home.js'
+import { closeShareMenu, handleShareClick } from '../components/share-menu.js'
 
 /**
  * Render the login prompt for unauthenticated users.
@@ -239,6 +243,7 @@ export async function myBetsPage({ params, query, container, detailPanel }) {
 
   // Event: card click
   function onCardClick(e) {
+    if (e.target.closest('.bet-card__share')) return
     const card = e.target.closest('.bet-card[data-bet-id]')
     if (card) {
       e.preventDefault()
@@ -270,16 +275,19 @@ export async function myBetsPage({ params, query, container, detailPanel }) {
     if (btn) fetchBets(true)
   }
 
+  betList.addEventListener('click', handleShareClick, true)
   betList.addEventListener('click', onCardClick)
   betList.addEventListener('keydown', onCardKeydown)
   tabsWrap.addEventListener('click', onTabClick)
   footer.addEventListener('click', onFooterClick)
 
   cleanups.push(() => {
+    betList.removeEventListener('click', handleShareClick, true)
     betList.removeEventListener('click', onCardClick)
     betList.removeEventListener('keydown', onCardKeydown)
     tabsWrap.removeEventListener('click', onTabClick)
     footer.removeEventListener('click', onFooterClick)
+    closeShareMenu()
   })
 
   // Listen for auth changes

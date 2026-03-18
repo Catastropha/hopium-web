@@ -1,3 +1,4 @@
+import '../styles/login.css'
 import { html, $, mount, escapeHtml } from '../utils/dom.js'
 import { t } from '../i18n.js'
 import { store } from '../store.js'
@@ -50,7 +51,7 @@ export async function loginPage({ params, query, container }) {
   const page = html`
     <div class="page page--login">
       <div class="login-card">
-        <div class="login-card__logo">H</div>
+        <div class="login-card__logo"><img src="/logo-letter.svg" alt="Hopium" width="48" height="48" /></div>
         <h1 class="login-card__title">${t('login')} to Hopium</h1>
         <div class="login-card__widget"></div>
         <p class="login-card__subtext text-secondary">${t('browseFreely')}</p>

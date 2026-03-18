@@ -1,0 +1,191 @@
+/* Hopium Web — Filter Bar */
+
+.filter-bar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg-primary);
+  padding-block: var(--space-md);
+  margin-block-end: var(--space-lg);
+  contain: layout style;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Filter chips (used in home.js and leaderboard.js) */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filter-chip:hover {
+  background: var(--bg-hover);
+}
+
+.filter-chip--active {
+  background: var(--yes-soft);
+  color: var(--yes);
+  border-color: transparent;
+}
+
+.filter-chip--active[style*="--chip-accent"] {
+  background: color-mix(in oklch, var(--chip-accent) 12%, transparent);
+  color: var(--chip-accent);
+}
+
+/* Custom country dropdown */
+.filter-bar__country {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.filter-bar__country-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filter-bar__country-btn:hover {
+  background: var(--bg-hover);
+}
+
+.filter-bar__country-flag {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.filter-bar__country-name {
+  font-size: 13px;
+}
+
+.filter-bar__chevron {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.filter-bar__dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-xs));
+  inset-inline-start: 0;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--space-xs);
+  z-index: 30;
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+}
+
+.filter-bar__dropdown[hidden] {
+  display: none;
+}
+
+.filter-bar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  width: 100%;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: start;
+}
+
+.filter-bar__dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.filter-bar__dropdown-item--selected {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.filter-bar__chips {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-bar__chips::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-bar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filter-bar__chip:hover {
+  background: var(--bg-hover);
+}
+
+.filter-bar__chip--selected {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.filter-bar__chip--selected[style*="--chip-accent"] {
+  background: color-mix(in oklch, var(--chip-accent) 12%, transparent);
+  color: var(--chip-accent);
+}

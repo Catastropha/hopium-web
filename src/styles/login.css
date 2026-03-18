@@ -1,0 +1,55 @@
+/* Hopium Web — Login Page */
+
+.page--login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-2xl);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-card__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card__logo img {
+  width: 48px;
+  height: 48px;
+  display: block;
+}
+
+.login-card__title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.login-card__widget {
+  width: 100%;
+  min-height: 40px;
+}
+
+.login-card__widget-retry {
+  margin-block-start: var(--space-md);
+}
+
+.login-card__subtext {
+  font-size: 13px;
+  color: var(--text-secondary);
+}

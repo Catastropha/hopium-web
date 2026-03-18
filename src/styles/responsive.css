@@ -1,0 +1,390 @@
+/* Hopium Web — Responsive Layout */
+
+/* ── Tablet (<1024px) ─────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .app-layout,
+  .app-layout.no-panel {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sidebar becomes top bar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 56px;
+    flex-direction: row;
+    padding: 0 var(--space-lg);
+    border-inline-end: none;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .sidebar__logo {
+    margin-block-end: 0;
+    margin-inline-end: var(--space-xl);
+  }
+
+  .sidebar__nav {
+    flex-direction: row;
+    gap: var(--space-xs);
+  }
+
+  .sidebar__item--active::before {
+    inset-inline-start: 50%;
+    top: auto;
+    bottom: -1px;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+  }
+
+  /* Hide desktop tooltips */
+  .sidebar [data-tooltip]::after {
+    display: none;
+  }
+
+  .sidebar__bottom {
+    margin-block-start: 0;
+    margin-inline-start: auto;
+  }
+
+  /* Main content adjusts for top bar */
+  .main-content {
+    grid-column: 1;
+    padding-block-start: calc(56px + var(--space-xl));
+  }
+
+  /* Sticky filter bar sits below the top bar */
+  .filter-bar-wrap {
+    top: 56px;
+  }
+
+  /* Detail panel goes full width */
+  .detail-panel {
+    grid-column: 1;
+    position: fixed;
+    inset: 0;
+    top: 56px;
+    width: 100%;
+    border-inline-start: none;
+    z-index: 40;
+  }
+
+  .leaderboard-table {
+    max-width: 100%;
+  }
+}
+
+/* ── Mobile (<768px) ──────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .main-content {
+    padding: calc(56px + var(--space-md)) var(--space-md) var(--space-md);
+  }
+
+  .main-inner {
+    max-width: none;
+  }
+
+  .detail-panel-inner {
+    padding: var(--space-md);
+  }
+
+  /* Sidebar — scroll nav if too many items */
+  .sidebar {
+    padding: 0 var(--space-md);
+    gap: 0;
+  }
+
+  .sidebar__logo-img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidebar__logo {
+    margin-inline-end: var(--space-sm);
+  }
+
+  .sidebar__nav {
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+  }
+
+  .sidebar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar__item {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .sidebar__item-label {
+    display: none;
+  }
+
+  .sidebar__balance {
+    font-size: 10px;
+  }
+
+  /* Bet cards — tighter, touch-friendly share button */
+  .bet-card {
+    padding: var(--space-md);
+  }
+
+  .bet-card__share {
+    width: 44px;
+    height: 44px;
+    margin-inline-end: calc(-1 * var(--space-sm));
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  /* Filter chips scroll horizontally */
+  .filter-chips {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Taller touch targets for chips */
+  .filter-chip,
+  .filter-bar__country-btn {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .filter-bar__dropdown-item {
+    padding: var(--space-md);
+    min-height: 44px;
+  }
+
+  /* Home hero tighter */
+  .home-hero {
+    padding-block-end: var(--space-md);
+    margin-block-end: var(--space-md);
+  }
+
+  .home-hero__title {
+    font-size: 18px;
+  }
+
+  /* Bet detail — mobile adjustments */
+  .bet-detail__title {
+    font-size: 18px;
+  }
+
+  .bet-detail__close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bet-detail__outcomes {
+    gap: var(--space-sm);
+  }
+
+  .bet-detail__outcome {
+    padding: var(--space-md);
+    min-height: 44px;
+  }
+
+  .bet-detail__quick-amounts {
+    gap: var(--space-xs);
+  }
+
+  .bet-detail__quick {
+    padding: var(--space-md) var(--space-sm);
+    min-height: 44px;
+  }
+
+  .bet-detail__share {
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Share menu → bottom sheet on mobile */
+  .share-menu {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    inset-inline: 0 !important;
+    transform: translateY(100%) !important;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    padding: var(--space-lg);
+    padding-block-end: max(var(--space-lg), env(safe-area-inset-bottom));
+    justify-content: center;
+    gap: var(--space-md);
+  }
+
+  .share-menu--open {
+    transform: translateY(0) !important;
+  }
+
+  .share-menu__item {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Leaderboard table — hide win rate (col 3) and streak (col 4) on small screens */
+  .leaderboard-th:nth-child(3),
+  .leaderboard-th:nth-child(4),
+  .leaderboard-cell:nth-child(3),
+  .leaderboard-cell:nth-child(4) {
+    display: none;
+  }
+
+  .podium {
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+  }
+
+  .podium__avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .podium__item--first .podium__avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Profile — full width */
+  .profile-content {
+    max-width: none;
+  }
+
+  .balance-card {
+    padding: var(--space-lg);
+  }
+
+  .balance-card__value {
+    font-size: 24px;
+  }
+
+  /* Login card — edge-to-edge padding */
+  .login-card {
+    padding: var(--space-xl);
+  }
+
+  /* Leave room for TG banner */
+  body.has-tg-banner .main-content {
+    padding-block-end: 60px;
+  }
+}
+
+/* ── Touch feedback ───────────────────────────────────── */
+
+@media (pointer: coarse) {
+  .bet-card:active {
+    background: var(--bg-hover);
+  }
+
+  .filter-chip:active {
+    background: var(--bg-hover);
+  }
+
+  .bet-detail__outcome:active:not(:disabled) {
+    background: var(--bg-hover);
+  }
+
+  .bet-detail__quick:active {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .leaderboard-row:active .leaderboard-cell {
+    background: var(--bg-hover);
+  }
+
+  .sidebar__item:active {
+    background: var(--bg-hover);
+  }
+
+  /* Disable hover effects that linger on touch */
+  .bet-card:hover {
+    background: var(--bg-surface);
+  }
+
+  .bet-card--selected:hover {
+    background: var(--bg-elevated);
+  }
+
+  .bet-card--has-position:hover {
+    background: color-mix(in oklch, var(--bg-surface) 95%, var(--yes) 5%);
+  }
+}
+
+/* ── Telegram CTA banner ──────────────────────────────── */
+
+.tg-banner {
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  padding-block-end: max(var(--space-md), env(safe-area-inset-bottom));
+  background: var(--bg-surface);
+  border-block-start: 1px solid var(--border);
+}
+
+.tg-banner__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--telegram);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--r-md);
+  text-decoration: none;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.tg-banner__link:active {
+  background: var(--telegram-hover);
+}
+
+.tg-banner__icon {
+  flex-shrink: 0;
+}
+
+.tg-banner__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tg-banner__close:active {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}

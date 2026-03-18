@@ -1,0 +1,46 @@
+/* Hopium Web — P&L Card */
+
+.pnl-card-wrap {
+  margin-block-end: var(--space-lg);
+}
+
+.pnl-card {
+  padding: var(--space-2xl);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  text-align: center;
+}
+
+.pnl-card__label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-block-end: var(--space-sm);
+}
+
+.pnl-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  margin-block-end: var(--space-lg);
+}
+
+.pnl-card__breakdown {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2xl);
+  padding-block-start: var(--space-lg);
+  border-block-start: 1px solid var(--border);
+}
+
+.pnl-card__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

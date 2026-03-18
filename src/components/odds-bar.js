@@ -1,3 +1,4 @@
+import '../styles/odds-bar.css'
 import { html } from '../utils/dom.js'
 
 /**

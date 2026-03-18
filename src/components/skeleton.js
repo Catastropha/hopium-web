@@ -1,3 +1,4 @@
+import '../styles/skeleton.css'
 import { html } from '../utils/dom.js'
 
 /**

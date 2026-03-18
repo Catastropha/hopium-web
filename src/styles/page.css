@@ -1,0 +1,28 @@
+/* Hopium Web — Page Containers */
+
+.page {
+  padding: var(--space-xl) 0;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-block-end: var(--space-xl);
+}
+
+.page-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-3xl) var(--space-xl);
+  gap: var(--space-md);
+}
+
+.page-empty--login {
+  max-width: 360px;
+  margin-inline: auto;
+}

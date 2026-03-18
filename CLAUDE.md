@@ -41,7 +41,7 @@ Desktop-first audience on laptops and large screens. Mix of existing TMA users w
 
 ### Design Principles
 
-1. **Desktop-only — mobile redirects to TMA.** Designed for >=1024px. Pointer interactions, hover states, keyboard shortcuts. Mobile visitors (screen width <768px or mobile user-agent) are redirected to the Telegram Mini App via `tg://` deep link. No mobile layout needed — the TMA IS the mobile experience.
+1. **Desktop-first, mobile-accessible.** Designed for >=1024px with pointer interactions, hover states, and keyboard shortcuts. Mobile visitors see the full site with a responsive layout and a dismissable Telegram CTA banner. The TMA remains the primary mobile experience, but shared links and browsing work on any device.
 
 2. **Speed is the feature.** Optimistic UI everywhere. Skeleton screens over spinners. URL-driven state. Transitions under 200ms. Prefetch on hover.
 
@@ -73,3 +73,13 @@ Target **WCAG 2.1 AAA** where feasible, with AA as the hard floor.
 - **System font stack** — no custom fonts.
 - **JS bundle < 80KB gzipped, CSS < 10KB gzipped.**
 - **No large dependencies.** `Intl` for formatting, native `fetch`, no UI framework, no state management library.
+
+### Lambda@Edge — OG Tag Injection
+
+A Lambda@Edge function serves server-rendered HTML with Open Graph meta tags to social media crawlers. This is necessary because the SPA sets meta tags client-side via JS, which crawlers (Twitter, Facebook, Telegram, Discord, etc.) don't execute.
+
+**Source:** `hopium-tf/projects/web/lambda/og-tags/index.mjs` (lives in the Terraform repo, not this repo).
+
+**How it works:** Attached to the CloudFront distribution's `origin-request` event. When a request for `/bet/:id` or `/share/:id` arrives with a crawler User-Agent, the Lambda fetches bet data from the Hopium API and returns minimal HTML with OG/Twitter Card/JSON-LD tags. Non-crawler requests pass through to S3 unchanged.
+
+**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle.

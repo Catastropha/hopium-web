@@ -1,3 +1,6 @@
+import '../styles/home-hero.css'
+import '../styles/filter-bar.css'
+import '../styles/bet-card.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatStarsCompact, formatOdds, formatPercent,
@@ -10,6 +13,7 @@ import { router } from '../router.js'
 import { CATEGORIES, CATEGORY_COLORS } from '../constants.js'
 import { createOddsBar } from '../components/odds-bar.js'
 import { createBetDetail } from '../components/bet-detail.js'
+import { shareBet, closeShareMenu, handleShareClick } from '../components/share-menu.js'
 
 /**
  * Render the home hero section for unauthenticated users.
@@ -19,7 +23,7 @@ function renderHero() {
   return `
     <div class="home-hero" role="banner">
       <div class="home-hero__brand">
-        <span class="home-hero__mark" aria-hidden="true">H</span>
+        <img class="home-hero__mark" src="/logo.svg" alt="" aria-hidden="true" width="28" height="28" />
         <h1 class="home-hero__title">${escapeHtml(t('heroTitle'))}</h1>
       </div>
       <p class="home-hero__sub">${escapeHtml(t('heroSub'))}</p>
@@ -92,6 +96,9 @@ function renderBetCard(bet, selectedId) {
       <div class="bet-card__bottom">
         <span class="bet-card__pool">${formatStars(totalPool)} ${t('pool')}</span>
         ${positionBadge}
+        <button class="bet-card__share" aria-label="${escapeHtml(t('share'))}" data-share>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        </button>
       </div>
     </article>
   `
@@ -101,6 +108,9 @@ function renderBetCard(bet, selectedId) {
   if (barWrap && bet.outcomes) {
     barWrap.appendChild(createOddsBar(bet.outcomes))
   }
+
+  // Attach bet data for share handler
+  card._bet = bet
 
   return card
 }
@@ -341,6 +351,8 @@ export async function homePage({ params, query, container, detailPanel }) {
 
   // Event: bet card click
   function onBetListClick(e) {
+    // Ignore clicks on share button
+    if (e.target.closest('.bet-card__share')) return
     const card = e.target.closest('.bet-card[data-bet-id]')
     if (!card) return
     e.preventDefault()
@@ -426,15 +438,20 @@ export async function homePage({ params, query, container, detailPanel }) {
     }
   }
 
-  // Keyboard navigation (j/k)
+  // Keyboard navigation (j/k) — throttled to prevent scroll jank on key hold
+  let navThrottled = false
   function onKeydown(e) {
     if (e.target.closest('input, select, textarea')) return
 
-    const cards = $$('.bet-card[data-bet-id]', betList)
-    if (!cards.length) return
-
     if (e.key === 'j' || e.key === 'k') {
       e.preventDefault()
+      if (navThrottled) return
+      navThrottled = true
+      setTimeout(() => { navThrottled = false }, 80)
+
+      const cards = $$('.bet-card[data-bet-id]', betList)
+      if (!cards.length) return
+
       const currentIdx = cards.findIndex((c) => c.dataset.betId === selectedBetId)
 
       let nextIdx
@@ -454,6 +471,7 @@ export async function homePage({ params, query, container, detailPanel }) {
   }
 
   // Attach events
+  betList.addEventListener('click', handleShareClick, true)
   betList.addEventListener('click', onBetListClick)
   betList.addEventListener('keydown', onBetListKeydown)
   footer.addEventListener('click', onFooterClick)
@@ -463,6 +481,7 @@ export async function homePage({ params, query, container, detailPanel }) {
   document.addEventListener('keydown', onKeydown)
 
   cleanups.push(() => {
+    betList.removeEventListener('click', handleShareClick, true)
     betList.removeEventListener('click', onBetListClick)
     betList.removeEventListener('keydown', onBetListKeydown)
     footer.removeEventListener('click', onFooterClick)
@@ -470,6 +489,7 @@ export async function homePage({ params, query, container, detailPanel }) {
     filterWrap.removeEventListener('keydown', onFilterKeydown)
     document.removeEventListener('click', onDocumentClick)
     document.removeEventListener('keydown', onKeydown)
+    closeShareMenu()
   })
 
   // Listen for selectedBetId changes from external sources

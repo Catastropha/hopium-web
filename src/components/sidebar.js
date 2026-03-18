@@ -1,3 +1,4 @@
+import '../styles/sidebar.css'
 import { html, $ } from '../utils/dom.js'
 import { t } from '../i18n.js'
 import { store } from '../store.js'
@@ -60,7 +61,7 @@ export function createSidebar() {
   const el = html`
     <nav class="sidebar" role="navigation" aria-label="${t('mainNav')}">
       <div class="sidebar__logo" aria-label="Hopium">
-        <span class="sidebar__logo-letter">H</span>
+        <img class="sidebar__logo-img" src="/logo-letter.svg" alt="Hopium" width="32" height="32" />
       </div>
       <div class="sidebar__nav">
         ${navItemsHtml}
