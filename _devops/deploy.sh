@@ -38,7 +38,7 @@ aws s3 cp dist/index.html "$S3_BUCKET/index.html" \
 
 aws cloudfront create-invalidation \
   --distribution-id "$CF_DISTRIBUTION" \
-  --paths "/index.html" \
+  --paths "/*" \
   --no-cli-pager
 
 echo "Deployed to $ENV"
