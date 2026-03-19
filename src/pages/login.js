@@ -4,6 +4,7 @@ import { store } from '../store.js'
 import { api, ApiError } from '../api.js'
 import { router } from '../router.js'
 import { BOT_USERNAME } from '../constants.js'
+import { isMobile, getTMALink } from '../utils/mobile.js'
 
 /**
  * Mount the Telegram Login Widget into a container element.
@@ -44,6 +45,12 @@ export async function loginPage({ params, query, container }) {
   // If already authenticated, redirect immediately
   if (store.isAuthenticated) {
     router.navigate(redirect)
+    return () => {}
+  }
+
+  // On mobile, redirect to Telegram Mini App instead of showing widget
+  if (isMobile()) {
+    window.location.href = getTMALink()
     return () => {}
   }
 

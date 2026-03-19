@@ -4,6 +4,7 @@ import { store } from '../store.js'
 import { api, ApiError } from '../api.js'
 import { BOT_USERNAME } from '../constants.js'
 import { showToast } from './toast.js'
+import { isMobile, getTMALink } from '../utils/mobile.js'
 
 /**
  * Create the Telegram Login component.
@@ -34,6 +35,10 @@ export function createTelegramLogin({ onSuccess } = {}) {
   let widgetLoaded = false
 
   btn.addEventListener('click', () => {
+    if (isMobile()) {
+      window.location.href = getTMALink()
+      return
+    }
     if (!widgetLoaded) {
       loadWidget()
     } else {
