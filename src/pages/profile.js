@@ -1,4 +1,3 @@
-import '../styles/profile.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatNumber, formatSignedStars, formatDate,

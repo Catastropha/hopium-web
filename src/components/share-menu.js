@@ -1,4 +1,3 @@
-import '../styles/share-menu.css'
 import { html, escapeHtml } from '../utils/dom.js'
 import { localize, t } from '../i18n.js'
 import { showToast } from './toast.js'

@@ -1,6 +1,3 @@
-import '../styles/home-hero.css'
-import '../styles/filter-bar.css'
-import '../styles/bet-card.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatStarsCompact, formatOdds, formatPercent,

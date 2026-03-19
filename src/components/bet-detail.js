@@ -1,4 +1,3 @@
-import '../styles/bet-detail.css'
 import { html, $, escapeHtml } from '../utils/dom.js'
 import { formatStars, formatStarsCompact, formatOdds, formatPercent, formatTimeRemaining, formatNumber, formatSignedStars } from '../utils/format.js'
 import { localize, t } from '../i18n.js'

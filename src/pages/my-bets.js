@@ -1,6 +1,3 @@
-import '../styles/bet-card.css'
-import '../styles/segmented-control.css'
-import '../styles/pnl-card.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatStarsCompact, formatSignedStars,

@@ -1,4 +1,3 @@
-import '../styles/login.css'
 import { html, $, mount, escapeHtml } from '../utils/dom.js'
 import { t } from '../i18n.js'
 import { store } from '../store.js'

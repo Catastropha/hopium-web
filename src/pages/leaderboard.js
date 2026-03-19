@@ -1,6 +1,3 @@
-import '../styles/leaderboard.css'
-import '../styles/segmented-control.css'
-import '../styles/filter-bar.css'
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
   formatStars, formatPercent, formatNumber, formatSignedStars,
