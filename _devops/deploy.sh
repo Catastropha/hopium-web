@@ -7,13 +7,13 @@ case "$ENV" in
   dev)
     S3_BUCKET="s3://hopium-web-dev"
     CF_DISTRIBUTION="E_DEV_DISTRIBUTION_ID"
-    VITE_API_BASE="https://dev-api.hopium.app"
+    VITE_API_BASE="https://dev-api.hopium.bet"
     VITE_BOT_USERNAME="HopiumDevBot"
     ;;
   live)
     S3_BUCKET="s3://hopium.bet"
     CF_DISTRIBUTION="E39NTHDF6WW9DR"
-    VITE_API_BASE="https://live-api.hopium.app"
+    VITE_API_BASE="https://live-api.hopium.bet"
     VITE_BOT_USERNAME="hopiumbetbot"
     ;;
   *)
