@@ -1,6 +1,6 @@
 export const BASE_URL = 'https://hopium.bet'
 export const API_BASE = import.meta.env.VITE_API_BASE || 'https://live-api.hopium.bet'
-export const BOT_USERNAME = import.meta.env.VITE_BOT_USERNAME || 'HopiumBot'
+export const BOT_USERNAME = import.meta.env.VITE_BOT_USERNAME || 'hopiumbetbot'
 
 export const TMA_URL = `https://t.me/${BOT_USERNAME}/app`
 
