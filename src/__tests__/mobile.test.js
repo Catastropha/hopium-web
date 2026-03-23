@@ -45,13 +45,13 @@ describe('isMobile', () => {
 
 describe('getTMALink', () => {
   it('returns base TMA URL when no context', () => {
-    expect(getTMALink()).toBe('https://t.me/HopiumBot/app')
-    expect(getTMALink('')).toBe('https://t.me/HopiumBot/app')
+    expect(getTMALink()).toBe('https://t.me/hopiumbetbot/app')
+    expect(getTMALink('')).toBe('https://t.me/hopiumbetbot/app')
   })
 
   it('appends startapp param with context', () => {
     expect(getTMALink('bet_abc123')).toBe(
-      'https://t.me/HopiumBot/app?startapp=bet_abc123'
+      'https://t.me/hopiumbetbot/app?startapp=bet_abc123'
     )
   })
 

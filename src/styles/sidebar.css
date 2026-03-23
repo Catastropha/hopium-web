@@ -162,3 +162,19 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+.sidebar__badge {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  color: var(--text-inverse);
+  background: var(--no);
+  border-radius: 8px;
+}

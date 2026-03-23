@@ -1,6 +1,6 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatStars, formatStarsCompact, formatSignedStars,
+  formatDollars, formatDollarsCompact, formatSignedDollars,
   formatTimeRemaining, formatNumber,
 } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
@@ -56,19 +56,19 @@ function renderPnlCard(bets) {
   return `
     <div class="pnl-card">
       <div class="pnl-card__label text-secondary">${t('totalPnL')}</div>
-      <div class="pnl-card__value ${pnlClass}">${formatSignedStars(pnl)}</div>
+      <div class="pnl-card__value ${pnlClass}">${formatSignedDollars(pnl)}</div>
       <div class="pnl-card__breakdown">
         <div class="pnl-card__item">
           <span class="text-secondary">${t('staked')}</span>
-          <span>${formatStars(staked)}</span>
+          <span>${formatDollars(staked)}</span>
         </div>
         <div class="pnl-card__item">
           <span class="text-secondary">${t('returned')}</span>
-          <span>${formatStars(returned)}</span>
+          <span>${formatDollars(returned)}</span>
         </div>
         <div class="pnl-card__item">
           <span class="text-secondary">${t('pending')}</span>
-          <span>${formatStars(pending)}</span>
+          <span>${formatDollars(pending)}</span>
         </div>
       </div>
     </div>
@@ -203,7 +203,7 @@ export async function myBetsPage({ params, query, container, detailPanel }) {
       betList.innerHTML = `
         <div class="page-empty">
           <p class="text-secondary">${t('noBetsYet')}</p>
-          <a href="/" data-link class="btn btn-primary">${t('home')}</a>
+          <a href="/" data-link class="btn btn-primary">${t('pickSideNow')}</a>
         </div>
       `
       footer.innerHTML = ''

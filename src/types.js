@@ -13,7 +13,7 @@
  * @typedef {Object} Outcome
  * @property {string} id
  * @property {LocalizedString|string} label
- * @property {number} pool - Total stars staked on this outcome
+ * @property {number} pool - Total cents staked on this outcome
  * @property {number} [odds] - Current payout multiplier
  * @property {boolean} [is_winner] - True if this outcome won (resolved bets only)
  */
@@ -23,8 +23,8 @@
 /**
  * @typedef {Object} UserPosition
  * @property {string} outcome_id
- * @property {number} amount - Stars staked by the user
- * @property {number} [payout] - Stars paid out (resolved bets only)
+ * @property {number} amount - Cents staked by the user
+ * @property {number} [payout] - Cents paid out (resolved bets only)
  */
 
 // ── Bet ──────────────────────────────────────────────────────────
@@ -86,17 +86,16 @@
  * @property {string} user_id
  */
 
-// ── Telegram Auth Data ───────────────────────────────────────────
+// ── Email Auth Response ─────────────────────────────────────────
 
 /**
- * @typedef {Object} TelegramAuthData
- * @property {number} id
- * @property {string} first_name
- * @property {string} [last_name]
- * @property {string} [username]
- * @property {string} [photo_url]
- * @property {number} auth_date
- * @property {string} hash
+ * @typedef {Object} EmailAuthResponse
+ * @property {string} token
+ * @property {number} token_exp
+ * @property {string} refresh_token
+ * @property {number} refresh_token_exp
+ * @property {string} user_id
+ * @property {boolean} is_new_user
  */
 
 // ── Balance Response ─────────────────────────────────────────────
@@ -141,12 +140,55 @@
 
 /**
  * @typedef {Object} DepositResponse
- * @property {string} [invoice_url]
+ * @property {Object} widget_config
+ * @property {number} amount
  */
 
 /**
  * @typedef {Object} WithdrawResponse
- * @property {number} [new_balance]
+ * @property {string} withdrawal_id
+ * @property {number} amount
+ * @property {string} moonpay_widget_url
+ */
+
+/**
+ * @typedef {Object} WithdrawalStatus
+ * @property {string} id
+ * @property {number} amount
+ * @property {'pending'|'processing'|'crypto_sent'|'completed'|'failed'} status
+ * @property {string} created_at
+ * @property {string|null} completed_at
+ */
+
+// ── Widget Config ────────────────────────────────────────────────
+
+/**
+ * @typedef {Object} WidgetConfig
+ * @property {string} apiKey
+ * @property {number} defaultAmount
+ * @property {string} defaultCrypto
+ * @property {string} onlyCryptos
+ * @property {string} onlyNetworks
+ * @property {string} walletAddress
+ * @property {string} partnerContext
+ * @property {boolean} isAmountEditable
+ */
+
+/**
+ * @typedef {Object} PositionCardResponse
+ * @property {WidgetConfig} widget_config
+ */
+
+// ── Notification ─────────────────────────────────────────────────
+
+/**
+ * @typedef {Object} Notification
+ * @property {string} id
+ * @property {'milestone'|'deposit'|'withdrawal'|'resolution'} type
+ * @property {string} title
+ * @property {string} body
+ * @property {boolean} is_read
+ * @property {string} created_at
  */
 
 export {}

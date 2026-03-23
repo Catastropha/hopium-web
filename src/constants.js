@@ -14,5 +14,7 @@ export const CATEGORY_COLORS = {
   Tech: 'var(--cat-tech)',
 }
 
-export const MIN_BET = 10
+export const MIN_BET = 100 // $1.00 in cents
+export const MIN_DEPOSIT = 100 // $1.00 in cents
+export const MIN_WITHDRAWAL = 1000 // $10.00 in cents
 export const PLATFORM_FEE = 0.05

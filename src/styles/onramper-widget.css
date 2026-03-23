@@ -1,0 +1,62 @@
+/* Hopium Web — Onramper Widget Modal */
+
+.onramper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay);
+}
+
+.onramper-modal {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  height: 640px;
+  max-height: calc(100vh - 64px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.onramper-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.onramper-modal__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.onramper-modal__close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 22px;
+  cursor: pointer;
+  padding: var(--space-xs);
+  line-height: 1;
+}
+
+.onramper-modal__close:hover {
+  color: var(--text-primary);
+}
+
+.onramper-modal__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.onramper-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+}

@@ -1,6 +1,6 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatStars, formatPercent, formatNumber, formatSignedStars,
+  formatDollars, formatPercent, formatNumber, formatSignedDollars,
   formatCompact,
 } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
@@ -67,7 +67,7 @@ function renderPodium(entries) {
         <div class="podium__medal">${medals[place]}</div>
         <div class="podium__avatar">${initial}</div>
         <div class="podium__name">${name}</div>
-        <div class="podium__profit ${profitClass}">${formatSignedStars(entry.total_profit)}</div>
+        <div class="podium__profit ${profitClass}">${formatSignedDollars(entry.total_profit)}</div>
       </div>
     `
   }
@@ -113,7 +113,7 @@ function renderTable(entries, startRank) {
         </td>
         <td class="leaderboard-cell leaderboard-cell--winrate">${formatPercent(entry.win_rate)}</td>
         <td class="leaderboard-cell leaderboard-cell--streak">${streakStr}</td>
-        <td class="leaderboard-cell leaderboard-cell--profit ${profitClass}">${formatSignedStars(entry.total_profit)}</td>
+        <td class="leaderboard-cell leaderboard-cell--profit ${profitClass}">${formatSignedDollars(entry.total_profit)}</td>
       </tr>
     `
   }).join('')

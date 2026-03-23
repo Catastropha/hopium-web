@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createMockContainer } from './helpers.js'
+import { createMockContainer, flushPromises } from './helpers.js'
 
 vi.mock('../i18n.js', () => ({
   t: (key) => key,
@@ -42,11 +42,18 @@ vi.mock('../router.js', () => ({
 
 vi.mock('../constants.js', () => ({
   BOT_USERNAME: 'HopiumBot',
+  TMA_URL: 'https://t.me/HopiumBot/app',
+}))
+
+vi.mock('../utils/mobile.js', () => ({
+  isMobile: () => false,
+  getTMALink: (ctx) => ctx ? `https://t.me/HopiumBot/app?startapp=${ctx}` : 'https://t.me/HopiumBot/app',
 }))
 
 import { loginPage } from '../pages/login.js'
 import { store } from '../store.js'
 import { router } from '../router.js'
+import { api } from '../api.js'
 
 describe('login page', () => {
   let mockContainer
@@ -59,7 +66,6 @@ describe('login page', () => {
 
   afterEach(() => {
     mockContainer.cleanup()
-    delete window.__hopiumTelegramAuth
   })
 
   it('redirects if already authenticated', async () => {
@@ -108,26 +114,27 @@ describe('login page', () => {
     expect(img.getAttribute('src')).toBe('/logo-letter.svg')
   })
 
-  it('mounts Telegram widget script', async () => {
+  it('renders email input for OTP flow', async () => {
     await loginPage({
       params: {},
       query: {},
       container: mockContainer.container,
     })
 
-    const script = mockContainer.container.querySelector('script')
-    expect(script).not.toBeNull()
-    expect(script.src).toContain('telegram.org')
+    const emailInput = mockContainer.container.querySelector('.login-input[type="email"]')
+    expect(emailInput).not.toBeNull()
   })
 
-  it('exposes __hopiumTelegramAuth global callback', async () => {
+  it('renders send code button', async () => {
     await loginPage({
       params: {},
       query: {},
       container: mockContainer.container,
     })
 
-    expect(typeof window.__hopiumTelegramAuth).toBe('function')
+    const submitBtn = mockContainer.container.querySelector('.login-submit')
+    expect(submitBtn).not.toBeNull()
+    expect(submitBtn.textContent).toBe('authSendCode')
   })
 
   it('returns cleanup function', async () => {
@@ -140,14 +147,41 @@ describe('login page', () => {
     expect(typeof cleanup).toBe('function')
   })
 
-  it('cleanup removes global callback', async () => {
-    const cleanup = await loginPage({
+  it('shows OTP step after successful email submission', async () => {
+    api.request.mockResolvedValue(null)
+
+    await loginPage({
       params: {},
       query: {},
       container: mockContainer.container,
     })
 
-    cleanup()
-    expect(window.__hopiumTelegramAuth).toBeUndefined()
+    const emailInput = mockContainer.container.querySelector('.login-input[type="email"]')
+    emailInput.value = 'test@example.com'
+    mockContainer.container.querySelector('.login-submit').click()
+
+    await flushPromises()
+
+    const otpInputs = mockContainer.container.querySelectorAll('.login-otp-digit')
+    expect(otpInputs.length).toBe(6)
+  })
+
+  it('shows error on failed email submission', async () => {
+    api.request.mockRejectedValue(new Error('Network error'))
+
+    await loginPage({
+      params: {},
+      query: {},
+      container: mockContainer.container,
+    })
+
+    const emailInput = mockContainer.container.querySelector('.login-input[type="email"]')
+    emailInput.value = 'test@example.com'
+    mockContainer.container.querySelector('.login-submit').click()
+
+    await flushPromises()
+
+    const errorEl = mockContainer.container.querySelector('.login-error')
+    expect(errorEl.hidden).toBe(false)
   })
 })

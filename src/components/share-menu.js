@@ -2,6 +2,7 @@ import { html, escapeHtml } from '../utils/dom.js'
 import { localize, t } from '../i18n.js'
 import { showToast } from './toast.js'
 import { BASE_URL } from '../constants.js'
+import { formatPoolCompact } from '../utils/format.js'
 
 /**
  * Build share text from a bet object.
@@ -18,14 +19,12 @@ function buildShareText(bet) {
   const yesLabel = (yes && localize(yes.label)) || 'YES'
   const noLabel = (no && localize(no.label)) || 'NO'
 
-  const pool = totalPool >= 1000
-    ? `${(totalPool / 1000).toFixed(totalPool >= 10000 ? 0 : 1)}K`
-    : String(totalPool)
+  const pool = formatPoolCompact(totalPool)
 
   const countdown = fmtCountdown(bet.resolution_date)
   const timeStr = countdown ? ` · ${countdown} left` : ''
 
-  return `${title}\n\n${yesLabel} ${yesPct}% · ${noLabel} ${noPct}%\n⭐ ${pool} pool${timeStr}`
+  return `${title}\n\n${yesLabel} ${yesPct}% · ${noLabel} ${noPct}%\n${pool} pool${timeStr}`
 }
 
 function fmtCountdown(dateStr) {

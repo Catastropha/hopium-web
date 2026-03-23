@@ -22,6 +22,7 @@ const TAB_ROUTES = ['/', '/my-bets', '/leaders', '/profile']
 
 let overlayEl = null
 let isOverlayVisible = false
+let previousFocus = null
 
 /**
  * Initialize global keyboard shortcut handling.
@@ -198,12 +199,20 @@ export function showShortcutsOverlay() {
 
     overlayEl.querySelector('.shortcuts-overlay__backdrop').addEventListener('click', hideShortcutsOverlay)
     overlayEl.querySelector('.shortcuts-overlay__close').addEventListener('click', hideShortcutsOverlay)
+
+    // Focus trap — Tab cycles to close button
+    overlayEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        overlayEl.querySelector('.shortcuts-overlay__close')?.focus()
+      }
+    })
   }
 
+  previousFocus = document.activeElement
   document.body.appendChild(overlayEl)
   isOverlayVisible = true
 
-  // Trap focus
   requestAnimationFrame(() => {
     overlayEl.querySelector('.shortcuts-overlay__close')?.focus()
   })
@@ -216,4 +225,6 @@ function hideShortcutsOverlay() {
   if (!isOverlayVisible || !overlayEl) return
   overlayEl.remove()
   isOverlayVisible = false
+  if (previousFocus && previousFocus.focus) previousFocus.focus()
+  previousFocus = null
 }

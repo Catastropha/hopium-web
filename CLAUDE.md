@@ -2,6 +2,30 @@
 
 Parimutuel prediction market web client. Standalone website sharing the same backend and user accounts as the Telegram Mini App.
 
+## Currency
+
+All amounts from the API are in **cents** (integer). Display as `$X.XX` using `formatDollars(cents)`. Compact display uses `formatDollarsCompact(cents)` (e.g. "$15K"). Share text and OG tags use `formatPoolCompact(cents)` for pool sizes.
+
+`MIN_BET = 100` ($1.00), `MIN_DEPOSIT = 100` ($1.00), `MIN_WITHDRAWAL = 1000` ($10.00). All in cents.
+
+## Auth
+
+Web users authenticate via **email OTP** — no Telegram Login Widget. Two-step flow: email input → 6-digit code. The login flow renders **inline in the bet detail panel** when an unauthenticated user clicks an outcome, preserving context (selected outcome stays highlighted, stake section appears immediately after auth). The standalone `/login` page uses the same OTP flow.
+
+TMA users who want web access connect an email via the profile page. The `/v1/auth/email/connect` endpoint links an email to an existing TMA account.
+
+Mobile visitors see the full email OTP form (not a TMA redirect). A "On mobile? Open in Telegram" link appears at the bottom of the login card.
+
+## Payments
+
+- **Deposits:** Onramper fiat-to-crypto widget. `POST /v1/balance/deposit` returns `{ widget_config }`. The widget opens in an iframe modal (`src/components/onramper-widget.js`) with focus trap, scroll lock, and focus restoration.
+- **Withdrawals:** MoonPay off-ramp. `POST /v1/balance/withdraw` returns `{ withdrawal_id, moonpay_widget_url }`. Opens in a new tab.
+- **Pay with Card:** When placing a bet with insufficient balance, a "Pay with card $X.XX" button appears. `POST /v1/position/card` returns `{ widget_config }` for Onramper.
+
+## Notifications
+
+Bell icon in sidebar with unread badge. `GET /v1/notification/` (paginated). `POST /v1/notification/read` marks all read. Unread count fetched on app load and stored in `store.unreadNotifications`.
+
 ## Design Context
 
 ### Users
@@ -58,21 +82,43 @@ Target **WCAG 2.1 AAA** where feasible, with AA as the hard floor.
 - All semantic colors must meet **4.5:1 contrast** against surfaces (7:1 preferred for AAA).
 - Secondary visual cues beyond color for all color-coded information (YES/NO labels, +/- prefixes, text labels alongside status colors).
 - Focus ring: `2px solid var(--focus-ring)`, visible on `:focus-visible` only.
-- Full keyboard operability: j/k navigation, Enter to open, Escape to close, number keys for tabs.
+- Full keyboard operability: j/k navigation, Enter to open, Escape to close, number keys for tabs, y/n for outcomes.
 - Skip link as first focusable element. Logical tab order: sidebar -> filters -> bet list -> detail panel.
-- `aria-live="polite"` for odds updates, balance changes, toasts.
+- `aria-live="polite"` for odds updates, balance changes, payout previews, toasts.
 - Odds bar uses `role="meter"` with proper ARIA attributes.
 - Route changes announced to screen readers.
 - All animations inside `@media (prefers-reduced-motion: no-preference)`.
 - Use `margin-inline-start` over `margin-left` (RTL-ready).
+- Modals (Onramper widget, keyboard shortcuts overlay) have focus traps, `role="dialog"`, `aria-modal="true"`, and restore focus on close.
+- OTP inputs use `aria-describedby` linking to the email confirmation text.
+- Form inputs use `aria-labelledby` pointing to section headings.
+
+### Z-Index Scale
+
+Defined as tokens in `tokens.css`:
+
+| Token | Value | Usage |
+|---|---|---|
+| `--z-panel` | 40 | Detail panel overlay on tablet/mobile |
+| `--z-banner` | 100 | Telegram CTA banner |
+| `--z-share-menu` | 1000 | Share popover menu |
+| `--z-modal` | 2000 | Onramper payment modal |
 
 ### Tech Stack
 
 - **Vanilla JS + Vite** — no framework, matching the TMA stack.
-- **CSS custom properties** for theming (tokens defined in DESIGN.md).
+- **CSS custom properties** for theming (tokens defined in `src/styles/tokens.css`).
 - **System font stack** — no custom fonts.
 - **JS bundle < 80KB gzipped, CSS < 10KB gzipped.**
 - **No large dependencies.** `Intl` for formatting, native `fetch`, no UI framework, no state management library.
+
+### Key Patterns
+
+- **Cleanup pattern:** Page handlers return a cleanup function. Event listeners, store subscriptions, and timers are pushed to a `cleanups` array and executed on route change.
+- **Inline HTML:** `html` template literal from `dom.js` creates DOM elements. User data always escaped with `escapeHtml()`.
+- **Store reactivity:** `store.on(key, fn)` returns an unsubscribe function. Auth state persisted to localStorage including `email` field.
+- **Code splitting:** Onramper widget is dynamically imported (`import('./onramper-widget.js')`) only when needed.
+- **Dollar formatting:** All `formatDollars*` functions take cents. Input fields accept dollars and convert with `Math.round(parseFloat(value) * 100)`.
 
 ### Lambda@Edge — OG Tag Injection
 
@@ -82,4 +128,4 @@ A Lambda@Edge function serves server-rendered HTML with Open Graph meta tags to 
 
 **How it works:** Attached to the CloudFront distribution's `origin-request` event. When a request for `/bet/:id` or `/share/:id` arrives with a crawler User-Agent, the Lambda fetches bet data from the Hopium API and returns minimal HTML with OG/Twitter Card/JSON-LD tags. Non-crawler requests pass through to S3 unchanged.
 
-**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle.
+**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, dollar formatting, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle. The Lambda still needs to be updated to use dollar formatting (pool amounts changed from Stars to cents).

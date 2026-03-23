@@ -22,7 +22,8 @@ import './styles/leaderboard.css'
 import './styles/segmented-control.css'
 import './styles/pnl-card.css'
 import './styles/login.css'
-import './styles/telegram-login.css'
+import './styles/notifications.css'
+import './styles/onramper-widget.css'
 import './styles/shortcuts.css'
 import './styles/responsive.css'
 import { isMobile, getTMALink } from './utils/mobile.js'
@@ -40,6 +41,7 @@ import { leaderboardPage } from './pages/leaderboard.js'
 import { profilePage } from './pages/profile.js'
 import { sharePage } from './pages/share.js'
 import { loginPage } from './pages/login.js'
+import { notificationsPage } from './pages/notifications.js'
 import { api } from './api.js'
 import { updateRouteMeta } from './utils/seo.js'
 import { trackPageView } from './utils/analytics.js'
@@ -189,6 +191,7 @@ function init() {
   router.add('/leaders/:period', wrapPage(leaderboardPage))
   router.add('/profile', wrapPage(profilePage))
   router.add('/share/:id', wrapPage(sharePage))
+  router.add('/notifications', wrapPage(notificationsPage))
   router.add('/login', wrapPage(loginPage))
 
   // Set container for router (for 404 fallback)
@@ -217,5 +220,13 @@ function init() {
     }).catch(() => {
       store.logout()
     })
+  }
+
+  // Fetch unread notification count on load (if authenticated)
+  if (store.isAuthenticated) {
+    api.get('/v1/notification/', { size: 1 }).then(res => {
+      const unread = (res.items || []).filter(n => !n.is_read).length
+      store.set({ unreadNotifications: unread })
+    }).catch(() => {})
   }
 }

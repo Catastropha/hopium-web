@@ -1,7 +1,7 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatStars, formatStarsCompact, formatOdds, formatPercent,
-  formatTimeRemaining, formatNumber, formatSignedStars, formatCompact,
+  formatDollars, formatDollarsCompact, formatOdds, formatPercent,
+  formatTimeRemaining, formatNumber, formatCompact,
 } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
 import { store } from '../store.js'
@@ -47,7 +47,7 @@ function renderBetCard(bet, selectedId) {
   // User position badge
   let positionBadge = ''
   if (bet.user_position_total != null && bet.user_position_total > 0) {
-    positionBadge = `<span class="bet-card__position">${escapeHtml(t('yourBet'))}: ${formatStars(bet.user_position_total)}</span>`
+    positionBadge = `<span class="bet-card__position">${escapeHtml(t('yourBet'))}: ${formatDollars(bet.user_position_total)}</span>`
   }
 
   // Urgency and state classes
@@ -83,15 +83,15 @@ function renderBetCard(bet, selectedId) {
       <div class="bet-card__odds-labels">
         <span class="bet-card__odds-yes">
           ${escapeHtml(yesLabel)} ${yesPct}%
-          <span class="text-secondary">&middot; ${formatStarsCompact(yesOutcome?.pool || 0)}</span>
+          <span class="text-secondary">&middot; ${formatDollarsCompact(yesOutcome?.pool || 0)}</span>
         </span>
         <span class="bet-card__odds-no">
           ${escapeHtml(noLabel)} ${noPct}%
-          <span class="text-secondary">&middot; ${formatStarsCompact(noOutcome?.pool || 0)}</span>
+          <span class="text-secondary">&middot; ${formatDollarsCompact(noOutcome?.pool || 0)}</span>
         </span>
       </div>
       <div class="bet-card__bottom">
-        <span class="bet-card__pool">${formatStars(totalPool)} ${t('pool')}</span>
+        <span class="bet-card__pool">${formatDollarsCompact(totalPool)} ${t('pool')}</span>
         ${positionBadge}
         <button class="bet-card__share" aria-label="${escapeHtml(t('share'))}" data-share>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>

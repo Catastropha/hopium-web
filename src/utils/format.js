@@ -5,6 +5,8 @@ let _lang = null
 let _numFmt = null
 let _numFmtCompact = null
 let _dateFmt = null
+let _dollarFmt = null
+let _dollarFmtCompact = null
 
 function ensureFormatters() {
   const lang = getLang()
@@ -13,6 +15,12 @@ function ensureFormatters() {
     _numFmt = new Intl.NumberFormat(lang, { maximumFractionDigits: 0 })
     _numFmtCompact = new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 })
     _dateFmt = new Intl.DateTimeFormat(lang, { month: 'short', day: 'numeric', year: 'numeric' })
+    _dollarFmt = new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD', minimumFractionDigits: 2,
+    })
+    _dollarFmtCompact = new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD', notation: 'compact',
+    })
   }
 }
 
@@ -33,17 +41,27 @@ export function formatCompact(n) {
 }
 
 /**
- * Format Stars amount with star icon: "⭐ 15,000"
+ * Format cents as dollars: 15000 → "$150.00"
  */
-export function formatStars(n) {
-  return `⭐\u00A0${formatNumber(n)}`
+export function formatDollars(n) {
+  ensureFormatters()
+  return _dollarFmt.format(n / 100)
 }
 
 /**
- * Format Stars compact: "⭐ 15K"
+ * Format cents as compact dollars: 1500000 → "$15K"
  */
-export function formatStarsCompact(n) {
-  return `⭐\u00A0${formatCompact(n)}`
+export function formatDollarsCompact(n) {
+  ensureFormatters()
+  return _dollarFmtCompact.format(n / 100)
+}
+
+/**
+ * Format signed dollar amount: +$1.50 or -$0.50
+ */
+export function formatSignedDollars(n) {
+  const sign = n >= 0 ? '+' : ''
+  return `${sign}${formatDollars(n)}`
 }
 
 /**
@@ -59,6 +77,17 @@ export function formatOdds(odds) {
 export function formatPercent(n) {
   if (n <= 1) n = n * 100
   return `${Math.round(n)}%`
+}
+
+/**
+ * Format cents as compact pool string for share text / OG tags: "$150", "$1.5K"
+ */
+export function formatPoolCompact(cents) {
+  const dollars = cents / 100
+  if (dollars >= 1000) {
+    return `$${(dollars / 1000).toFixed(dollars >= 10000 ? 0 : 1)}K`
+  }
+  return `$${Math.round(dollars)}`
 }
 
 /**
@@ -84,12 +113,4 @@ export function formatTimeRemaining(dateStr) {
 export function formatDate(dateStr) {
   ensureFormatters()
   return _dateFmt.format(new Date(dateStr))
-}
-
-/**
- * Format sign amount: +⭐ 100 or -⭐ 50
- */
-export function formatSignedStars(n) {
-  const sign = n >= 0 ? '+' : ''
-  return `${sign}⭐\u00A0${formatNumber(Math.abs(n))}`
 }

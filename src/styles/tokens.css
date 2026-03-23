@@ -33,6 +33,11 @@
   --bronze: #CD7F32;
   --telegram: #2AABEE;
   --telegram-hover: #229ED9;
+  --overlay: rgba(0, 0, 0, 0.7);
+  --z-panel: 40;
+  --z-banner: 100;
+  --z-share-menu: 1000;
+  --z-modal: 2000;
   --r-sm: 6px;
   --r-md: 10px;
   --r-lg: 14px;

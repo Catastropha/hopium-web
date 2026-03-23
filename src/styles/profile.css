@@ -37,6 +37,11 @@
   margin-block-end: var(--space-xl);
 }
 
+.balance-card__hint {
+  font-size: 13px;
+  margin-block-end: var(--space-sm);
+}
+
 .balance-card__actions {
   display: flex;
   gap: var(--space-md);
@@ -158,6 +163,49 @@
   font-weight: 600;
   text-align: center;
   padding: var(--space-lg);
+}
+
+.balance-flow__note {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Email connect section */
+.email-connect-wrap {
+  margin-block-end: var(--space-lg);
+}
+
+.email-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  flex-wrap: wrap;
+}
+
+.email-section__label {
+  font-size: 13px;
+}
+
+.email-section__value {
+  font-size: 14px;
+}
+
+.email-connect-flow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-sm);
+}
+
+.email-connect-actions {
+  display: flex;
+  gap: var(--space-sm);
 }
 
 /* Transaction section */

@@ -1,4 +1,4 @@
-/* Hopium Web — Login Page */
+/* Hopium Web — Login Page (Email OTP) */
 
 .page--login {
   display: flex;
@@ -40,16 +40,128 @@
   letter-spacing: -0.02em;
 }
 
-.login-card__widget {
+.login-card__form {
   width: 100%;
-  min-height: 40px;
-}
-
-.login-card__widget-retry {
-  margin-block-start: var(--space-md);
 }
 
 .login-card__subtext {
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+.login-card__tma-link {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-card__tma-link:hover {
+  color: var(--text-primary);
+}
+
+/* Email step */
+
+.login-email-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-input {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+}
+
+.login-input:focus {
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.login-submit {
+  width: 100%;
+}
+
+.login-error {
+  font-size: 13px;
+  color: var(--error);
+}
+
+.login-error[hidden] {
+  display: none;
+}
+
+/* OTP step */
+
+.login-otp-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.login-otp-email {
+  font-size: 14px;
+}
+
+.login-otp-inputs {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.login-otp-digit {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  outline: none;
+  caret-color: var(--accent);
+}
+
+.login-otp-digit:focus {
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-otp-inputs--shake {
+    animation: otp-shake 0.4s ease-out;
+  }
+}
+
+@keyframes otp-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.login-back-btn,
+.login-resend-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.login-back-btn:hover,
+.login-resend-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.login-resend-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
 }

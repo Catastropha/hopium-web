@@ -8,13 +8,14 @@ vi.mock('../i18n.js', () => ({
 import {
   formatNumber,
   formatCompact,
-  formatStars,
-  formatStarsCompact,
+  formatDollars,
+  formatDollarsCompact,
   formatOdds,
   formatPercent,
   formatTimeRemaining,
   formatDate,
-  formatSignedStars,
+  formatSignedDollars,
+  formatPoolCompact,
 } from '../utils/format.js'
 
 describe('formatNumber', () => {
@@ -53,17 +54,35 @@ describe('formatCompact', () => {
   })
 })
 
-describe('formatStars', () => {
-  it('prepends star emoji with non-breaking space', () => {
-    const result = formatStars(100)
-    expect(result).toBe('⭐\u00A0100')
+describe('formatDollars', () => {
+  it('formats cents as dollars', () => {
+    expect(formatDollars(15000)).toBe('$150.00')
+  })
+
+  it('formats zero cents', () => {
+    expect(formatDollars(0)).toBe('$0.00')
+  })
+
+  it('formats small amounts', () => {
+    expect(formatDollars(100)).toBe('$1.00')
+  })
+
+  it('formats fractional cents correctly', () => {
+    expect(formatDollars(199)).toBe('$1.99')
   })
 })
 
-describe('formatStarsCompact', () => {
-  it('prepends star emoji with compact number', () => {
-    const result = formatStarsCompact(15000)
-    expect(result).toBe('⭐\u00A015K')
+describe('formatDollarsCompact', () => {
+  it('formats large amounts compactly', () => {
+    const result = formatDollarsCompact(1500000)
+    expect(result).toContain('$')
+    expect(result).toContain('15K')
+  })
+
+  it('formats small amounts', () => {
+    const result = formatDollarsCompact(500)
+    expect(result).toContain('$')
+    expect(result).toContain('5')
   })
 })
 
@@ -134,20 +153,40 @@ describe('formatDate', () => {
   })
 })
 
-describe('formatSignedStars', () => {
+describe('formatSignedDollars', () => {
   it('adds + for positive amounts', () => {
-    const result = formatSignedStars(100)
-    expect(result).toBe('+⭐\u00A0100')
+    const result = formatSignedDollars(100)
+    expect(result).toBe('+$1.00')
   })
 
-  it('shows negative amounts without extra sign', () => {
-    const result = formatSignedStars(-50)
-    // The negative sign comes from the empty string prefix
-    // n >= 0 is false, so sign = ''
-    expect(result).toBe('⭐\u00A050')
+  it('shows negative amounts', () => {
+    const result = formatSignedDollars(-5000)
+    expect(result).toBe('-$50.00')
   })
 
   it('adds + for zero', () => {
-    expect(formatSignedStars(0)).toBe('+⭐\u00A00')
+    expect(formatSignedDollars(0)).toBe('+$0.00')
+  })
+})
+
+describe('formatPoolCompact', () => {
+  it('formats small pools as rounded dollars', () => {
+    expect(formatPoolCompact(50000)).toBe('$500')
+  })
+
+  it('formats zero', () => {
+    expect(formatPoolCompact(0)).toBe('$0')
+  })
+
+  it('formats thousands with one decimal', () => {
+    expect(formatPoolCompact(150000)).toBe('$1.5K')
+  })
+
+  it('formats large pools as integer K', () => {
+    expect(formatPoolCompact(1500000)).toBe('$15K')
+  })
+
+  it('formats exact thousands', () => {
+    expect(formatPoolCompact(100000)).toBe('$1.0K')
   })
 })

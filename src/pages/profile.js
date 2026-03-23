@@ -1,10 +1,12 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatStars, formatNumber, formatSignedStars, formatDate,
+  formatDollars, formatNumber, formatSignedDollars, formatDate,
 } from '../utils/format.js'
+import { MIN_DEPOSIT, MIN_WITHDRAWAL } from '../constants.js'
 import { localize, t } from '../i18n.js'
 import { store } from '../store.js'
 import { api, ApiError } from '../api.js'
+import { showToast } from '../components/toast.js'
 
 /**
  * Transaction type config: icon SVG, color class, label.
@@ -51,10 +53,13 @@ function renderLoginPrompt() {
  * Render the balance card.
  */
 function renderBalanceCard(balance) {
+  const bal = balance != null ? balance : 0
+  const hint = bal === 0 ? `<div class="balance-card__hint text-secondary">${t('addFundsToStart')}</div>` : ''
   return `
     <div class="balance-card">
       <div class="balance-card__label text-secondary">${t('balance')}</div>
-      <div class="balance-card__value">${formatStars(balance != null ? balance : 0)}</div>
+      <div class="balance-card__value">${formatDollars(bal)}</div>
+      ${hint}
       <div class="balance-card__actions">
         <button class="btn btn-primary balance-deposit-btn">${t('deposit')}</button>
         <button class="btn btn-secondary balance-withdraw-btn">${t('withdraw')}</button>
@@ -69,17 +74,19 @@ function renderBalanceCard(balance) {
 function renderDepositForm() {
   return `
     <div class="balance-flow balance-flow--deposit">
-      <h4 class="balance-flow__title">${t('depositVia')}</h4>
+      <h4 class="balance-flow__title" id="deposit-title">${t('depositTitle')}</h4>
       <div class="balance-flow__input-wrap">
-        <span class="balance-flow__icon">&#11088;</span>
-        <input type="number" class="balance-flow__input" min="1" placeholder="100" aria-label="${t('depositAmount')}" />
+        <span class="balance-flow__icon">$</span>
+        <input type="number" class="balance-flow__input" min="1" step="0.01" placeholder="10.00" aria-labelledby="deposit-title" />
       </div>
       <div class="balance-flow__quick">
-        <button class="stake-quick" data-amount="100">100</button>
-        <button class="stake-quick" data-amount="500">500</button>
-        <button class="stake-quick" data-amount="1000">1000</button>
+        <button class="stake-quick" data-amount="5">$5</button>
+        <button class="stake-quick" data-amount="10">$10</button>
+        <button class="stake-quick" data-amount="25">$25</button>
+        <button class="stake-quick" data-amount="50">$50</button>
       </div>
-      <button class="btn btn-primary balance-flow__confirm">${t('deposit')}</button>
+      <button class="btn btn-primary balance-flow__confirm">${t('depositContinue')}</button>
+      <p class="balance-flow__note text-secondary">${t('depositCardNote')}<br>${t('depositFeeNote')}</p>
       <div class="balance-flow__error" role="alert" hidden></div>
       <div class="balance-flow__message" hidden></div>
     </div>
@@ -92,12 +99,14 @@ function renderDepositForm() {
 function renderWithdrawForm(balance) {
   return `
     <div class="balance-flow balance-flow--withdraw">
-      <h4 class="balance-flow__title">${t('withdrawTo')}</h4>
+      <h4 class="balance-flow__title" id="withdraw-title">${t('withdrawTitle')}</h4>
       <div class="balance-flow__input-wrap">
-        <span class="balance-flow__icon">&#11088;</span>
-        <input type="number" class="balance-flow__input" min="1" max="${balance || 0}" placeholder="50" aria-label="${t('withdrawAmount')}" />
+        <span class="balance-flow__icon">$</span>
+        <input type="number" class="balance-flow__input" min="10" step="0.01" placeholder="50.00" aria-labelledby="withdraw-title" />
       </div>
+      <p class="balance-flow__note text-secondary">${t('withdrawAvailable')}: ${formatDollars(balance || 0)}<br>${t('withdrawMinimum')}</p>
       <button class="btn btn-primary balance-flow__confirm">${t('withdraw')}</button>
+      <p class="balance-flow__note text-secondary">${t('withdrawRedirectNote')}<br>${t('withdrawArrivalNote')}</p>
       <div class="balance-flow__error" role="alert" hidden></div>
     </div>
   `
@@ -116,8 +125,8 @@ function renderTransactions(transactions) {
     const config = txTypes[tx.type] || txTypes.deposit
     const amountClass = tx.amount >= 0 ? 'text-yes' : 'text-no'
     const amountStr = tx.amount >= 0
-      ? `+${formatStars(tx.amount)}`
-      : `-${formatStars(Math.abs(tx.amount))}`
+      ? `+${formatDollars(tx.amount)}`
+      : `-${formatDollars(Math.abs(tx.amount))}`
 
     return `
       <tr class="tx-row">
@@ -163,6 +172,7 @@ export async function profilePage({ params, query, container }) {
       <div class="profile-content">
         <div class="balance-card-wrap"></div>
         <div class="balance-flow-wrap"></div>
+        <div class="email-connect-wrap"></div>
         <div class="tx-section">
           <h3 class="tx-section__title">${t('transactions')}</h3>
           <div class="tx-list">
@@ -180,6 +190,7 @@ export async function profilePage({ params, query, container }) {
 
   const balanceWrap = $('.balance-card-wrap', page)
   const flowWrap = $('.balance-flow-wrap', page)
+  const emailWrap = $('.email-connect-wrap', page)
   const txList = $('.tx-list', page)
   const txFooter = $('.tx-footer', page)
 
@@ -187,6 +198,119 @@ export async function profilePage({ params, query, container }) {
   function renderBalance() {
     balanceWrap.innerHTML = renderBalanceCard(balance)
   }
+
+  // Email connect section
+  function renderEmailConnect() {
+    const email = store.get('email')
+    if (email) {
+      emailWrap.innerHTML = `
+        <div class="email-section">
+          <span class="email-section__label text-secondary">${t('profileEmail')}</span>
+          <span class="email-section__value">${escapeHtml(email)}</span>
+        </div>
+      `
+    } else {
+      emailWrap.innerHTML = `
+        <div class="email-section">
+          <span class="email-section__label text-secondary">${t('profileEmail')}</span>
+          <span class="email-section__value text-secondary">${t('profileEmailNotConnected')}</span>
+          <button class="btn btn-secondary email-connect-btn">${t('profileConnectEmail')}</button>
+        </div>
+      `
+      const connectBtn = $('.email-connect-btn', emailWrap)
+      if (connectBtn) {
+        connectBtn.addEventListener('click', startEmailConnect)
+      }
+    }
+  }
+
+  let connectEmail = '' // tracks email during connect flow
+
+  function startEmailConnect() {
+    emailWrap.innerHTML = `
+      <div class="email-section">
+        <span class="email-section__label text-secondary">${t('profileEmail')}</span>
+        <div class="email-connect-flow">
+          <input type="email" class="login-input email-connect-input" placeholder="${escapeHtml(t('authEmailPlaceholder'))}" />
+          <div class="email-connect-actions">
+            <button class="btn btn-primary email-connect-send">${t('authSendCode')}</button>
+            <button class="btn btn-secondary email-connect-cancel">${t('close')}</button>
+          </div>
+          <div class="login-error email-connect-error" role="alert" hidden></div>
+        </div>
+      </div>
+    `
+    const input = $('.email-connect-input', emailWrap)
+    const sendBtn = $('.email-connect-send', emailWrap)
+    const cancelBtn = $('.email-connect-cancel', emailWrap)
+    const errorEl = $('.email-connect-error', emailWrap)
+    input.focus()
+
+    sendBtn.addEventListener('click', () => sendConnectCode(input, sendBtn, errorEl))
+    cancelBtn.addEventListener('click', renderEmailConnect)
+  }
+
+  async function sendConnectCode(input, sendBtn, errorEl) {
+    connectEmail = input.value.trim()
+    if (!connectEmail || !connectEmail.includes('@')) return
+
+    sendBtn.disabled = true
+    sendBtn.textContent = '...'
+    errorEl.hidden = true
+
+    try {
+      await api.request('POST', '/v1/auth/email', { body: { email: connectEmail } })
+      showConnectCodeStep()
+    } catch (err) {
+      errorEl.textContent = err.message || t('error')
+      errorEl.hidden = false
+      sendBtn.disabled = false
+      sendBtn.textContent = t('authSendCode')
+    }
+  }
+
+  function showConnectCodeStep() {
+    emailWrap.innerHTML = `
+      <div class="email-section">
+        <span class="email-section__label text-secondary">${t('profileEmail')}</span>
+        <div class="email-connect-flow">
+          <p class="text-secondary">${t('authCodeSentTo')} ${escapeHtml(connectEmail)}</p>
+          <input type="text" class="login-input email-connect-code" placeholder="000000" maxlength="6" inputmode="numeric" />
+          <button class="btn btn-primary email-connect-verify">${t('profileConnectEmail')}</button>
+          <div class="login-error email-connect-error" role="alert" hidden></div>
+        </div>
+      </div>
+    `
+    const codeInput = $('.email-connect-code', emailWrap)
+    const verifyBtn = $('.email-connect-verify', emailWrap)
+    const verifyError = $('.email-connect-error', emailWrap)
+    codeInput.focus()
+
+    verifyBtn.addEventListener('click', () => verifyConnectCode(codeInput, verifyBtn, verifyError))
+  }
+
+  async function verifyConnectCode(codeInput, verifyBtn, verifyError) {
+    const code = codeInput.value.trim()
+    if (code.length !== 6) return
+
+    verifyBtn.disabled = true
+    verifyBtn.textContent = '...'
+    verifyError.hidden = true
+
+    try {
+      await api.post('/v1/auth/email/connect', { email: connectEmail, code })
+      store.set({ email: connectEmail })
+      showToast({ message: t('profileEmailConnected'), type: 'success' })
+      renderEmailConnect()
+    } catch (err) {
+      verifyError.textContent = err.message || t('error')
+      verifyError.hidden = false
+      verifyBtn.disabled = false
+      verifyBtn.textContent = t('profileConnectEmail')
+    }
+  }
+
+  renderEmailConnect()
 
   // Fetch balance and transactions
   async function fetchTransactions(append = false) {
@@ -278,8 +402,13 @@ export async function profilePage({ params, query, container }) {
 
     // Confirm deposit
     async function onConfirm() {
-      const amount = Math.max(0, parseInt(input.value, 10) || 0)
-      if (amount < 1) return
+      const dollars = parseFloat(input.value) || 0
+      const amount = Math.round(dollars * 100) // convert to cents
+      if (amount < MIN_DEPOSIT) {
+        errorEl.textContent = t('depositMinimum')
+        errorEl.hidden = false
+        return
+      }
 
       confirmBtn.disabled = true
       confirmBtn.textContent = '...'
@@ -289,13 +418,16 @@ export async function profilePage({ params, query, container }) {
       try {
         const res = await api.post('/v1/balance/deposit', { amount })
 
-        if (res.invoice_url) {
-          window.open(res.invoice_url, '_blank')
+        if (res.widget_config) {
+          // Open Onramper widget
+          const { createOnramperWidget } = await import('../components/onramper-widget.js')
+          const modal = createOnramperWidget(res.widget_config)
+          document.body.appendChild(modal)
         }
 
         messageEl.textContent = t('depositSuccess')
         messageEl.hidden = false
-        confirmBtn.textContent = t('deposit')
+        confirmBtn.textContent = t('depositContinue')
         confirmBtn.disabled = false
       } catch (err) {
         // Error-code-specific messages per spec
@@ -304,7 +436,7 @@ export async function profilePage({ params, query, container }) {
           : (err.message || t('error'))
         errorEl.textContent = msg
         errorEl.hidden = false
-        confirmBtn.textContent = t('deposit')
+        confirmBtn.textContent = t('depositContinue')
         confirmBtn.disabled = false
       }
     }
@@ -320,8 +452,18 @@ export async function profilePage({ params, query, container }) {
     const errorEl = $('.balance-flow__error', flowWrap)
 
     async function onConfirm() {
-      const amount = Math.max(0, parseInt(input.value, 10) || 0)
-      if (amount < 1 || amount > (store.get('balance') || 0)) return
+      const dollars = parseFloat(input.value) || 0
+      const amount = Math.round(dollars * 100) // convert to cents
+      if (amount < MIN_WITHDRAWAL) {
+        errorEl.textContent = t('withdrawMinimum')
+        errorEl.hidden = false
+        return
+      }
+      if (amount > (store.get('balance') || 0)) {
+        errorEl.textContent = t('withdrawInsufficient')
+        errorEl.hidden = false
+        return
+      }
 
       confirmBtn.disabled = true
       confirmBtn.textContent = '...'
@@ -330,10 +472,9 @@ export async function profilePage({ params, query, container }) {
       try {
         const res = await api.post('/v1/balance/withdraw', { amount })
 
-        if (res.new_balance != null) {
-          balance = res.new_balance
-          store.set({ balance })
-          renderBalance()
+        // Open MoonPay widget URL
+        if (res.moonpay_widget_url) {
+          window.open(res.moonpay_widget_url, '_blank')
         }
 
         // Show success, close flow

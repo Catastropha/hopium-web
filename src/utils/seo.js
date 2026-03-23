@@ -1,5 +1,6 @@
 import { BASE_URL } from '../constants.js'
 import { localize } from '../i18n.js'
+import { formatPoolCompact } from './format.js'
 
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og.png`
 
@@ -85,10 +86,7 @@ function buildBetDescription(bet) {
 
   const parts = [`${yesLabel} ${yesPct}% · ${noLabel} ${noPct}%`]
   if (totalPool > 0) {
-    const pool = totalPool >= 1000
-      ? `${(totalPool / 1000).toFixed(totalPool >= 10000 ? 0 : 1)}K`
-      : String(totalPool)
-    parts.push(`⭐ ${pool} pool`)
+    parts.push(`${formatPoolCompact(totalPool)} pool`)
   }
   if (bet.category) parts.push(bet.category)
 

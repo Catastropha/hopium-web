@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 vi.mock('../i18n.js', () => ({
   t: (key) => key,
+  getLang: () => 'en',
 }))
 
 vi.mock('../store.js', () => {
@@ -45,10 +46,10 @@ describe('sidebar', () => {
     expect(el.getAttribute('role')).toBe('navigation')
   })
 
-  it('renders 4 nav items', () => {
+  it('renders 5 nav items', () => {
     const el = createSidebar()
     const items = el.querySelectorAll('.sidebar__item')
-    expect(items.length).toBe(4)
+    expect(items.length).toBe(5)
   })
 
   it('sets home as active by default on / path', () => {
@@ -79,7 +80,7 @@ describe('sidebar', () => {
     const el = createSidebar()
     const balance = el.querySelector('.sidebar__balance')
     expect(balance).not.toBeNull()
-    expect(balance.textContent).toContain('2k')
+    expect(balance.textContent).toContain('$')
   })
 
   it('renders logo image', () => {
@@ -103,6 +104,7 @@ describe('sidebar', () => {
     expect(items[0].getAttribute('href')).toBe('/')
     expect(items[1].getAttribute('href')).toBe('/my-bets')
     expect(items[2].getAttribute('href')).toBe('/leaders')
-    expect(items[3].getAttribute('href')).toBe('/profile')
+    expect(items[3].getAttribute('href')).toBe('/notifications')
+    expect(items[4].getAttribute('href')).toBe('/profile')
   })
 })
