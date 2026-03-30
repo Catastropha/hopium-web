@@ -1,4 +1,4 @@
-/* Hopium Web — Login Page (Email OTP) */
+/* Hopium Web — Login Page (Web Code) */
 
 .page--login {
   display: flex;
@@ -59,9 +59,9 @@
   color: var(--text-primary);
 }
 
-/* Email step */
+/* Code step */
 
-.login-email-step {
+.login-code-step {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -83,6 +83,14 @@
   box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
+.login-code-input {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
 .login-submit {
   width: 100%;
 }
@@ -96,72 +104,15 @@
   display: none;
 }
 
-/* OTP step */
-
-.login-otp-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-}
-
-.login-otp-email {
-  font-size: 14px;
-}
-
-.login-otp-inputs {
-  display: flex;
-  gap: var(--space-sm);
-  justify-content: center;
-}
-
-.login-otp-digit {
-  width: 44px;
-  height: 52px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 600;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  color: var(--text-primary);
-  outline: none;
-  caret-color: var(--accent);
-}
-
-.login-otp-digit:focus {
-  border-color: var(--focus-ring);
-  box-shadow: 0 0 0 2px var(--focus-ring);
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .login-otp-inputs--shake {
-    animation: otp-shake 0.4s ease-out;
+  .login-code-input--shake {
+    animation: code-shake 0.4s ease-out;
   }
 }
 
-@keyframes otp-shake {
+@keyframes code-shake {
   10%, 90% { transform: translateX(-1px); }
   20%, 80% { transform: translateX(2px); }
   30%, 50%, 70% { transform: translateX(-4px); }
   40%, 60% { transform: translateX(4px); }
-}
-
-.login-back-btn,
-.login-resend-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  padding: var(--space-xs) var(--space-sm);
-}
-
-.login-back-btn:hover,
-.login-resend-btn:hover:not(:disabled) {
-  color: var(--text-primary);
-}
-
-.login-resend-btn:disabled {
-  cursor: default;
-  opacity: 0.5;
 }

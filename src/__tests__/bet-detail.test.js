@@ -39,7 +39,7 @@ vi.mock('../constants.js', () => ({
   API_BASE: 'https://api.test.com',
   CATEGORIES: ['Sports', 'Politics', 'Crypto', 'Culture', 'Tech'],
   CATEGORY_COLORS: { Crypto: '#F59E0B' },
-  MIN_BET: 100,
+  MIN_BET: 1_000_000_000,
   PLATFORM_FEE: 0.05,
 }))
 
@@ -161,7 +161,7 @@ describe('bet-detail', () => {
 
   it('shows stake section when authenticated user clicks outcome', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -175,7 +175,7 @@ describe('bet-detail', () => {
 
   it('toggles outcome selection on second click', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -188,9 +188,9 @@ describe('bet-detail', () => {
     expect(el.querySelector('.bet-detail__stake').hidden).toBe(true)
   })
 
-  it('quick amount buttons set input value in dollars', async () => {
+  it('quick amount buttons set input value in TON', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -199,16 +199,16 @@ describe('bet-detail', () => {
     // Select an outcome first
     el.querySelector('.bet-detail__outcome').click()
 
-    const quickBtn = el.querySelector('.bet-detail__quick[data-amount="1000"]')
+    const quickBtn = el.querySelector('.bet-detail__quick[data-amount="2000000000"]')
     quickBtn.click()
 
     const input = el.querySelector('.bet-detail__stake-input')
-    expect(input.value).toBe('10.00')
+    expect(input.value).toBe('2')
   })
 
-  it('MAX button sets input to balance in dollars', async () => {
+  it('MAX button sets input to balance in TON', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -217,12 +217,12 @@ describe('bet-detail', () => {
     el.querySelector('.bet-detail__outcome').click()
     el.querySelector('.bet-detail__stake-max').click()
 
-    expect(el.querySelector('.bet-detail__stake-input').value).toBe('500.00')
+    expect(el.querySelector('.bet-detail__stake-input').value).toBe('50')
   })
 
   it('place bet button is disabled initially', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -303,30 +303,19 @@ describe('bet-detail', () => {
     expect(el.querySelector('.bet-detail__share')).not.toBeNull()
   })
 
-  it('has pay with card button', async () => {
+  it('shows TON currency label for stake input', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
     await flushPromises()
 
-    expect(el.querySelector('.bet-detail__card-btn')).not.toBeNull()
-  })
-
-  it('shows dollar symbol for stake input', async () => {
-    store._state.token = 'tok'
-    store._state.balance = 50000
-    api.get.mockResolvedValue(createMockBet())
-    const el = createBetDetail('bet-1')
-    mockContainer.container.appendChild(el)
-    await flushPromises()
-
-    expect(el.querySelector('.bet-detail__stake-dollar').textContent).toBe('$')
+    expect(el.querySelector('.bet-detail__stake-currency').textContent).toBe('TON')
   })
 
   // Inline auth flow
-  it('shows inline email input when unauthenticated user clicks outcome', async () => {
+  it('shows inline code input when unauthenticated user clicks outcome', async () => {
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -334,35 +323,15 @@ describe('bet-detail', () => {
 
     el.querySelector('.bet-detail__outcome').click()
 
-    const emailInput = el.querySelector('.bet-detail__auth-email')
-    expect(emailInput).not.toBeNull()
-    expect(emailInput.type).toBe('email')
-  })
-
-  it('shows OTP inputs after sending email code', async () => {
-    api.get.mockResolvedValue(createMockBet())
-    api.request.mockResolvedValue(null)
-    const el = createBetDetail('bet-1')
-    mockContainer.container.appendChild(el)
-    await flushPromises()
-
-    el.querySelector('.bet-detail__outcome').click()
-
-    const emailInput = el.querySelector('.bet-detail__auth-email')
-    emailInput.value = 'test@example.com'
-    el.querySelector('.bet-detail__auth-send').click()
-    await flushPromises()
-
-    const otpDigits = el.querySelectorAll('.login-otp-digit')
-    expect(otpDigits.length).toBe(6)
+    const codeInput = el.querySelector('.bet-detail__auth-code')
+    expect(codeInput).not.toBeNull()
   })
 
   it('shows stake section after successful inline auth', async () => {
-    store._state.balance = 50000
+    store._state.balance = 50_000_000_000
     api.get.mockResolvedValue(createMockBet())
     api.request
-      .mockResolvedValueOnce(null) // send email
-      .mockResolvedValueOnce({     // validate OTP
+      .mockResolvedValueOnce({
         token: 'new-tok',
         token_exp: Math.floor(Date.now() / 1000) + 3600,
         refresh_token: 'ref',
@@ -376,41 +345,15 @@ describe('bet-detail', () => {
     // Select outcome
     el.querySelector('.bet-detail__outcome').click()
 
-    // Enter email and send
-    el.querySelector('.bet-detail__auth-email').value = 'test@example.com'
-    el.querySelector('.bet-detail__auth-send').click()
-    await flushPromises()
-
-    // Enter OTP digits
-    const digits = el.querySelectorAll('.login-otp-digit')
-    '123456'.split('').forEach((ch, i) => {
-      digits[i].value = ch
-      digits[i].dispatchEvent(new Event('input'))
-    })
+    // Enter web-code and submit
+    const codeInput = el.querySelector('.bet-detail__auth-code')
+    codeInput.value = 'ABC123'
+    codeInput.dispatchEvent(new Event('input', { bubbles: true }))
+    el.querySelector('.bet-detail__auth-submit').click()
     await flushPromises()
 
     // Stake section should now be visible
     expect(el.querySelector('.bet-detail__stake').hidden).toBe(false)
-  })
-
-  it('shows back button in OTP step', async () => {
-    api.get.mockResolvedValue(createMockBet())
-    api.request.mockResolvedValue(null)
-    const el = createBetDetail('bet-1')
-    mockContainer.container.appendChild(el)
-    await flushPromises()
-
-    el.querySelector('.bet-detail__outcome').click()
-    el.querySelector('.bet-detail__auth-email').value = 'test@example.com'
-    el.querySelector('.bet-detail__auth-send').click()
-    await flushPromises()
-
-    const backBtn = el.querySelector('.login-back-btn')
-    expect(backBtn).not.toBeNull()
-
-    // Clicking back returns to email input
-    backBtn.click()
-    expect(el.querySelector('.bet-detail__auth-email')).not.toBeNull()
   })
 
   // Win celebration
@@ -459,7 +402,7 @@ describe('bet-detail', () => {
   // Balance display
   it('shows balance in stake section when authenticated', async () => {
     store._state.token = 'tok'
-    store._state.balance = 12300
+    store._state.balance = 12_300_000_000
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -469,13 +412,13 @@ describe('bet-detail', () => {
 
     const balanceRow = el.querySelector('.bet-detail__balance-row')
     expect(balanceRow).not.toBeNull()
-    expect(balanceRow.textContent).toContain('$')
+    expect(balanceRow.textContent).toContain('TON')
   })
 
-  // Pay with card shows amount
-  it('pay with card button shows dollar amount when balance insufficient', async () => {
+  // Insufficient balance shows deposit link
+  it('shows insufficient balance message when stake exceeds balance', async () => {
     store._state.token = 'tok'
-    store._state.balance = 100 // $1 balance
+    store._state.balance = 1_000_000_000 // 1 TON
     api.get.mockResolvedValue(createMockBet())
     const el = createBetDetail('bet-1')
     mockContainer.container.appendChild(el)
@@ -483,13 +426,13 @@ describe('bet-detail', () => {
 
     el.querySelector('.bet-detail__outcome').click()
 
-    // Set stake to $10 (1000 cents) which exceeds $1 balance
+    // Set stake to 10 TON which exceeds 1 TON balance
     const input = el.querySelector('.bet-detail__stake-input')
     input.value = '10'
     input.dispatchEvent(new Event('input'))
 
-    const cardBtn = el.querySelector('.bet-detail__card-btn')
-    expect(cardBtn.hidden).toBe(false)
-    expect(cardBtn.textContent).toContain('$10.00')
+    const insufficientEl = el.querySelector('.bet-detail__insufficient')
+    expect(insufficientEl.hidden).toBe(false)
+    expect(el.querySelector('.bet-detail__deposit-link')).not.toBeNull()
   })
 })

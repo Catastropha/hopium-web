@@ -63,13 +63,13 @@
 }
 
 .toast--warning {
-  background: oklch(77% 0.14 85 / 0.10);
+  background: var(--warning-soft);
   color: var(--warning);
   border: 1px solid var(--warning);
 }
 
 .toast--info {
-  background: oklch(60% 0.18 260 / 0.10);
+  background: var(--info-soft);
   color: var(--info);
   border: 1px solid var(--info);
 }

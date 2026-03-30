@@ -120,8 +120,8 @@
   }
 
   .sidebar__item {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
   }
 
@@ -130,7 +130,7 @@
   }
 
   .sidebar__balance {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .sidebar__avatar,
@@ -186,12 +186,12 @@
   }
 
   .home-hero__title {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   /* Bet detail — mobile adjustments */
   .bet-detail__title {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .bet-detail__close {
@@ -269,6 +269,18 @@
     height: 48px;
   }
 
+  /* P&L card breakdown — tighter on mobile */
+  .pnl-card__breakdown {
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+
+  /* Filter dropdown — constrain on mobile */
+  .filter-bar__dropdown {
+    min-width: auto;
+    max-width: calc(100vw - var(--space-2xl));
+  }
+
   /* Profile — full width */
   .profile-content {
     max-width: none;
@@ -279,12 +291,16 @@
   }
 
   .balance-card__value {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   /* Login card — edge-to-edge padding */
   .login-card {
     padding: var(--space-xl);
+  }
+
+  .keyboard-hint {
+    display: none;
   }
 
   /* Leave room for TG banner */
@@ -359,7 +375,7 @@
   padding: var(--space-sm) var(--space-md);
   background: var(--telegram);
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   border-radius: var(--r-md);
   text-decoration: none;

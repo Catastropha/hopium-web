@@ -1,6 +1,6 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatDollars, formatDollarsCompact, formatOdds, formatPercent,
+  formatTon, formatTonCompact, formatOdds, formatPercent,
   formatTimeRemaining, formatNumber, formatCompact,
 } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
@@ -25,6 +25,7 @@ function renderHero() {
       </div>
       <p class="home-hero__sub">${escapeHtml(t('heroSub'))}</p>
       <p class="home-hero__hint">${escapeHtml(t('heroHint'))}</p>
+      <div class="home-hero__stats text-tertiary micro" aria-hidden="true"></div>
     </div>
   `
 }
@@ -47,7 +48,7 @@ function renderBetCard(bet, selectedId) {
   // User position badge
   let positionBadge = ''
   if (bet.user_position_total != null && bet.user_position_total > 0) {
-    positionBadge = `<span class="bet-card__position">${escapeHtml(t('yourBet'))}: ${formatDollars(bet.user_position_total)}</span>`
+    positionBadge = `<span class="bet-card__position">${escapeHtml(t('yourBet'))}: ${formatTon(bet.user_position_total)}</span>`
   }
 
   // Urgency and state classes
@@ -83,15 +84,15 @@ function renderBetCard(bet, selectedId) {
       <div class="bet-card__odds-labels">
         <span class="bet-card__odds-yes">
           ${escapeHtml(yesLabel)} ${yesPct}%
-          <span class="text-secondary">&middot; ${formatDollarsCompact(yesOutcome?.pool || 0)}</span>
+          <span class="text-secondary">&middot; ${formatTonCompact(yesOutcome?.pool || 0)}</span>
         </span>
         <span class="bet-card__odds-no">
           ${escapeHtml(noLabel)} ${noPct}%
-          <span class="text-secondary">&middot; ${formatDollarsCompact(noOutcome?.pool || 0)}</span>
+          <span class="text-secondary">&middot; ${formatTonCompact(noOutcome?.pool || 0)}</span>
         </span>
       </div>
       <div class="bet-card__bottom">
-        <span class="bet-card__pool">${formatDollarsCompact(totalPool)} ${t('pool')}</span>
+        <span class="bet-card__pool">${formatTonCompact(totalPool)} ${t('pool')}</span>
         ${positionBadge}
         <button class="bet-card__share" aria-label="${escapeHtml(t('share'))}" data-share>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
@@ -175,7 +176,7 @@ function renderFilterBar(activeCategory, activeCountry, countries) {
   return `
     <div class="filter-bar" role="toolbar" aria-label="${t('filters')}">
       <div class="filter-bar__country">
-        <button class="filter-bar__country-btn" aria-expanded="false" aria-haspopup="listbox">
+        <button class="filter-bar__country-btn" aria-expanded="false" aria-haspopup="listbox" aria-label="${t('categoryFilter')}: ${activeName}">
           <span class="filter-bar__country-flag">${activeFlag}</span>
           <span class="filter-bar__country-name">${activeName}</span>
           <svg class="filter-bar__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -211,7 +212,10 @@ export async function homePage({ params, query, container, detailPanel }) {
       <div class="bet-list" role="list" aria-live="polite" aria-label="${t('bets')}">
         ${renderSkeletons(4)}
       </div>
-      <div class="bet-list__footer"></div>
+      <div class="bet-list__footer" aria-live="polite"></div>
+      <div class="keyboard-hint micro text-tertiary" aria-hidden="true">
+        <kbd>J</kbd>/<kbd>K</kbd> navigate &middot; <kbd>Enter</kbd> open &middot; <kbd>?</kbd> shortcuts
+      </div>
     </div>
   `
 
@@ -299,6 +303,7 @@ export async function homePage({ params, query, container, detailPanel }) {
       betList.innerHTML = `
         <div class="page-empty">
           <p class="text-secondary">${t('noResults')}</p>
+          <button class="btn btn-secondary page-empty__reset" data-category="">${t('all')}</button>
         </div>
       `
       return
@@ -326,14 +331,17 @@ export async function homePage({ params, query, container, detailPanel }) {
   }
 
   // Select a bet card and open detail panel
+  let prevSelectedCard = null
   function selectBet(betId) {
+    // Deselect previous
+    if (prevSelectedCard) prevSelectedCard.classList.remove('bet-card--selected')
+    // Select new
+    const newCard = betId ? betList.querySelector(`.bet-card[data-bet-id="${betId}"]`) : null
+    if (newCard) newCard.classList.add('bet-card--selected')
+    prevSelectedCard = newCard
+
     selectedBetId = betId
     store.set({ selectedBetId: betId })
-
-    // Update visual selection
-    $$('.bet-card', betList).forEach((card) => {
-      card.classList.toggle('bet-card--selected', card.dataset.betId === betId)
-    })
 
     // Update URL
     if (betId) {
@@ -348,6 +356,16 @@ export async function homePage({ params, query, container, detailPanel }) {
 
   // Event: bet card click
   function onBetListClick(e) {
+    const resetBtn = e.target.closest('.page-empty__reset')
+    if (resetBtn) {
+      currentCategory = ''
+      currentCountry = ''
+      updateURL()
+      filterWrap.innerHTML = renderFilterBar(currentCategory, currentCountry, countries)
+      fetchBets(false)
+      return
+    }
+
     // Ignore clicks on share button
     if (e.target.closest('.bet-card__share')) return
     const card = e.target.closest('.bet-card[data-bet-id]')
@@ -377,10 +395,14 @@ export async function homePage({ params, query, container, detailPanel }) {
   function onFilterClick(e) {
     const chip = e.target.closest('.filter-chip')
     if (chip) {
-      currentCategory = chip.dataset.category || ''
+      const selectedCategory = chip.dataset.category || ''
+      currentCategory = selectedCategory
       updateURL()
       // Re-render filter bar
       filterWrap.innerHTML = renderFilterBar(currentCategory, currentCountry, countries)
+      // Restore focus to the clicked category chip
+      const restoredChip = filterWrap.querySelector(`.filter-chip[data-category="${CSS.escape(selectedCategory)}"]`)
+      if (restoredChip) restoredChip.focus()
       fetchBets(false)
       return
     }
@@ -403,6 +425,9 @@ export async function homePage({ params, query, container, detailPanel }) {
       currentCountry = countryItem.dataset.country || ''
       updateURL()
       filterWrap.innerHTML = renderFilterBar(currentCategory, currentCountry, countries)
+      // Restore focus to the country button
+      const restoredBtn = filterWrap.querySelector('.filter-bar__country-btn')
+      if (restoredBtn) restoredBtn.focus()
       fetchBets(false)
       return
     }
@@ -420,7 +445,7 @@ export async function homePage({ params, query, container, detailPanel }) {
     }
   }
 
-  // Close country dropdown on Escape
+  // Close country dropdown on Escape, navigate with arrow keys
   function onFilterKeydown(e) {
     if (e.key === 'Escape') {
       const dropdown = filterWrap.querySelector('.filter-bar__dropdown')
@@ -431,6 +456,36 @@ export async function homePage({ params, query, container, detailPanel }) {
           btn.setAttribute('aria-expanded', 'false')
           btn.focus()
         }
+      }
+    }
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const dropdown = filterWrap.querySelector('.filter-bar__dropdown')
+      const btn = filterWrap.querySelector('.filter-bar__country-btn')
+
+      // If dropdown is closed and ArrowDown on country button, open it
+      if (e.key === 'ArrowDown' && dropdown && dropdown.hidden && e.target.closest('.filter-bar__country-btn')) {
+        e.preventDefault()
+        dropdown.hidden = false
+        if (btn) btn.setAttribute('aria-expanded', 'true')
+        const firstItem = dropdown.querySelector('.filter-bar__dropdown-item')
+        if (firstItem) firstItem.focus()
+        return
+      }
+
+      // If dropdown is open, navigate items
+      if (dropdown && !dropdown.hidden) {
+        e.preventDefault()
+        const items = [...dropdown.querySelectorAll('.filter-bar__dropdown-item')]
+        if (!items.length) return
+        const currentIdx = items.indexOf(document.activeElement)
+        let nextIdx
+        if (e.key === 'ArrowDown') {
+          nextIdx = currentIdx < items.length - 1 ? currentIdx + 1 : 0
+        } else {
+          nextIdx = currentIdx > 0 ? currentIdx - 1 : items.length - 1
+        }
+        items[nextIdx].focus()
       }
     }
   }
@@ -491,15 +546,23 @@ export async function homePage({ params, query, container, detailPanel }) {
 
   // Listen for selectedBetId changes from external sources
   const unsub = store.on('selectedBetId', (id) => {
+    if (prevSelectedCard) prevSelectedCard.classList.remove('bet-card--selected')
+    const newCard = id ? betList.querySelector(`.bet-card[data-bet-id="${id}"]`) : null
+    if (newCard) newCard.classList.add('bet-card--selected')
+    prevSelectedCard = newCard
     selectedBetId = id
-    $$('.bet-card', betList).forEach((card) => {
-      card.classList.toggle('bet-card--selected', card.dataset.betId === id)
-    })
   })
   cleanups.push(unsub)
 
   // Initial fetch
   await fetchBets(false)
+
+  // Update hero stats after initial load
+  const heroStats = page.querySelector('.home-hero__stats')
+  if (heroStats && bets.length > 0) {
+    const totalPool = bets.reduce((sum, b) => sum + (b.total_pool || 0), 0)
+    heroStats.textContent = `${bets.length} markets · ${formatTonCompact(totalPool)} total pool`
+  }
 
   // Auto-select first bet if none selected (reveals two-panel layout)
   if (!selectedBetId && bets.length > 0) {

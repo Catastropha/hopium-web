@@ -4,23 +4,22 @@ Parimutuel prediction market web client. Standalone website sharing the same bac
 
 ## Currency
 
-All amounts from the API are in **cents** (integer). Display as `$X.XX` using `formatDollars(cents)`. Compact display uses `formatDollarsCompact(cents)` (e.g. "$15K"). Share text and OG tags use `formatPoolCompact(cents)` for pool sizes.
+All amounts from the API are in **nanotons** (integer, 1 TON = 1,000,000,000). Display as `X.XX TON` using `formatTon(nanotons)`. Compact display uses `formatTonCompact(nanotons)` (e.g. "15K TON"). Share text and OG tags use `formatPoolCompact(nanotons)` for pool sizes.
 
-`MIN_BET = 100` ($1.00), `MIN_DEPOSIT = 100` ($1.00), `MIN_WITHDRAWAL = 1000` ($10.00). All in cents.
+`NANOTON = 1_000_000_000`, `MIN_BET = 1_000_000_000` (1 TON), `MIN_DEPOSIT = 1_000_000_000` (1 TON), `MIN_WITHDRAWAL = 5_000_000_000` (5 TON). All in nanotons.
 
 ## Auth
 
-Web users authenticate via **email OTP** — no Telegram Login Widget. Two-step flow: email input → 6-digit code. The login flow renders **inline in the bet detail panel** when an unauthenticated user clicks an outcome, preserving context (selected outcome stays highlighted, stake section appears immediately after auth). The standalone `/login` page uses the same OTP flow.
+Web users authenticate via **web-code** — a 6-character alphanumeric code generated in the TMA. Single-step flow: enter code → authenticated. The login flow renders **inline in the bet detail panel** when an unauthenticated user clicks an outcome, preserving context (selected outcome stays highlighted, stake section appears immediately after auth). The standalone `/login` page uses the same web-code flow.
 
-TMA users who want web access connect an email via the profile page. The `/v1/auth/email/connect` endpoint links an email to an existing TMA account.
+The code is generated via `POST /v1/auth/web-code` (TMA-side, requires TMA auth) and validated via `POST /v1/auth/web-code/validate` (web-side, no auth required). Codes are 6 uppercase alphanumeric characters, single-use, expire in 5 minutes.
 
-Mobile visitors see the full email OTP form (not a TMA redirect). A "On mobile? Open in Telegram" link appears at the bottom of the login card.
+Mobile visitors see the full code input form (not a TMA redirect). A "On mobile? Open in Telegram" link appears at the bottom of the login card.
 
 ## Payments
 
-- **Deposits:** Onramper fiat-to-crypto widget. `POST /v1/balance/deposit` returns `{ widget_config }`. The widget opens in an iframe modal (`src/components/onramper-widget.js`) with focus trap, scroll lock, and focus restoration.
-- **Withdrawals:** MoonPay off-ramp. `POST /v1/balance/withdraw` returns `{ withdrawal_id, moonpay_widget_url }`. Opens in a new tab.
-- **Pay with Card:** When placing a bet with insufficient balance, a "Pay with card $X.XX" button appears. `POST /v1/position/card` returns `{ widget_config }` for Onramper.
+- **Deposits:** TON deep link. `POST /v1/balance/deposit` returns `{ ton_deep_link, memo, amount_nanoton, expires_at }`. The deep link opens the user's TON wallet (Tonkeeper / Telegram Wallet). Deposit info (memo, expiry countdown) shown inline. Balance refreshed on `visibilitychange`.
+- **Withdrawals:** Direct TON transfer. `POST /v1/balance/withdraw` with `{ amount, wallet_address }` returns `{ withdrawal_id, amount }`. User provides their TON wallet address (48-67 chars). `GET /v1/balance/withdraw/{id}` returns `ton_tx_hash` for explorer link.
 
 ## Notifications
 
@@ -89,8 +88,8 @@ Target **WCAG 2.1 AAA** where feasible, with AA as the hard floor.
 - Route changes announced to screen readers.
 - All animations inside `@media (prefers-reduced-motion: no-preference)`.
 - Use `margin-inline-start` over `margin-left` (RTL-ready).
-- Modals (Onramper widget, keyboard shortcuts overlay) have focus traps, `role="dialog"`, `aria-modal="true"`, and restore focus on close.
-- OTP inputs use `aria-describedby` linking to the email confirmation text.
+- Modals (keyboard shortcuts overlay) have focus traps, `role="dialog"`, `aria-modal="true"`, and restore focus on close.
+- Login code input uses `aria-label` for accessibility.
 - Form inputs use `aria-labelledby` pointing to section headings.
 
 ### Z-Index Scale
@@ -99,10 +98,12 @@ Defined as tokens in `tokens.css`:
 
 | Token | Value | Usage |
 |---|---|---|
+| `--z-dropdown` | 30 | Filter bar country dropdown |
 | `--z-panel` | 40 | Detail panel overlay on tablet/mobile |
+| `--z-tooltip` | 60 | Sidebar tooltips |
 | `--z-banner` | 100 | Telegram CTA banner |
+| `--z-overlay` | 300 | Keyboard shortcuts overlay |
 | `--z-share-menu` | 1000 | Share popover menu |
-| `--z-modal` | 2000 | Onramper payment modal |
 
 ### Tech Stack
 
@@ -116,9 +117,8 @@ Defined as tokens in `tokens.css`:
 
 - **Cleanup pattern:** Page handlers return a cleanup function. Event listeners, store subscriptions, and timers are pushed to a `cleanups` array and executed on route change.
 - **Inline HTML:** `html` template literal from `dom.js` creates DOM elements. User data always escaped with `escapeHtml()`.
-- **Store reactivity:** `store.on(key, fn)` returns an unsubscribe function. Auth state persisted to localStorage including `email` field.
-- **Code splitting:** Onramper widget is dynamically imported (`import('./onramper-widget.js')`) only when needed.
-- **Dollar formatting:** All `formatDollars*` functions take cents. Input fields accept dollars and convert with `Math.round(parseFloat(value) * 100)`.
+- **Store reactivity:** `store.on(key, fn)` returns an unsubscribe function. Auth state (token, refresh token, user ID, username, photo URL) persisted to localStorage.
+- **TON formatting:** All `formatTon*` functions take nanotons. Input fields accept TON and convert with `Math.round(parseFloat(value) * 1_000_000_000)`.
 
 ### Lambda@Edge — OG Tag Injection
 
@@ -128,4 +128,4 @@ A Lambda@Edge function serves server-rendered HTML with Open Graph meta tags to 
 
 **How it works:** Attached to the CloudFront distribution's `origin-request` event. When a request for `/bet/:id` or `/share/:id` arrives with a crawler User-Agent, the Lambda fetches bet data from the Hopium API and returns minimal HTML with OG/Twitter Card/JSON-LD tags. Non-crawler requests pass through to S3 unchanged.
 
-**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, dollar formatting, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle. The Lambda still needs to be updated to use dollar formatting (pool amounts changed from Stars to cents).
+**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, TON formatting, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle. The Lambda needs to be updated to use TON formatting (pool amounts are now nanotons).

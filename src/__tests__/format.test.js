@@ -8,13 +8,13 @@ vi.mock('../i18n.js', () => ({
 import {
   formatNumber,
   formatCompact,
-  formatDollars,
-  formatDollarsCompact,
+  formatTon,
+  formatTonCompact,
   formatOdds,
   formatPercent,
   formatTimeRemaining,
   formatDate,
-  formatSignedDollars,
+  formatSignedTon,
   formatPoolCompact,
 } from '../utils/format.js'
 
@@ -54,34 +54,34 @@ describe('formatCompact', () => {
   })
 })
 
-describe('formatDollars', () => {
-  it('formats cents as dollars', () => {
-    expect(formatDollars(15000)).toBe('$150.00')
+describe('formatTon', () => {
+  it('formats nanotons as TON', () => {
+    expect(formatTon(1_500_000_000)).toBe('1.50 TON')
   })
 
-  it('formats zero cents', () => {
-    expect(formatDollars(0)).toBe('$0.00')
+  it('formats zero', () => {
+    expect(formatTon(0)).toBe('0.00 TON')
   })
 
-  it('formats small amounts', () => {
-    expect(formatDollars(100)).toBe('$1.00')
+  it('formats 1 TON', () => {
+    expect(formatTon(1_000_000_000)).toBe('1.00 TON')
   })
 
-  it('formats fractional cents correctly', () => {
-    expect(formatDollars(199)).toBe('$1.99')
+  it('formats fractional TON', () => {
+    expect(formatTon(1_990_000_000)).toBe('1.99 TON')
   })
 })
 
-describe('formatDollarsCompact', () => {
+describe('formatTonCompact', () => {
   it('formats large amounts compactly', () => {
-    const result = formatDollarsCompact(1500000)
-    expect(result).toContain('$')
+    const result = formatTonCompact(15_000_000_000_000)
+    expect(result).toContain('TON')
     expect(result).toContain('15K')
   })
 
   it('formats small amounts', () => {
-    const result = formatDollarsCompact(500)
-    expect(result).toContain('$')
+    const result = formatTonCompact(5_000_000_000)
+    expect(result).toContain('TON')
     expect(result).toContain('5')
   })
 })
@@ -153,40 +153,40 @@ describe('formatDate', () => {
   })
 })
 
-describe('formatSignedDollars', () => {
+describe('formatSignedTon', () => {
   it('adds + for positive amounts', () => {
-    const result = formatSignedDollars(100)
-    expect(result).toBe('+$1.00')
+    const result = formatSignedTon(1_000_000_000)
+    expect(result).toBe('+1.00 TON')
   })
 
   it('shows negative amounts', () => {
-    const result = formatSignedDollars(-5000)
-    expect(result).toBe('-$50.00')
+    const result = formatSignedTon(-50_000_000_000)
+    expect(result).toBe('-50.00 TON')
   })
 
   it('adds + for zero', () => {
-    expect(formatSignedDollars(0)).toBe('+$0.00')
+    expect(formatSignedTon(0)).toBe('+0.00 TON')
   })
 })
 
 describe('formatPoolCompact', () => {
-  it('formats small pools as rounded dollars', () => {
-    expect(formatPoolCompact(50000)).toBe('$500')
+  it('formats small pools as rounded TON', () => {
+    expect(formatPoolCompact(5_000_000_000)).toBe('5 TON')
   })
 
   it('formats zero', () => {
-    expect(formatPoolCompact(0)).toBe('$0')
+    expect(formatPoolCompact(0)).toBe('0.00 TON')
   })
 
   it('formats thousands with one decimal', () => {
-    expect(formatPoolCompact(150000)).toBe('$1.5K')
+    expect(formatPoolCompact(1_500_000_000_000)).toBe('1.5K TON')
   })
 
   it('formats large pools as integer K', () => {
-    expect(formatPoolCompact(1500000)).toBe('$15K')
+    expect(formatPoolCompact(15_000_000_000_000)).toBe('15K TON')
   })
 
-  it('formats exact thousands', () => {
-    expect(formatPoolCompact(100000)).toBe('$1.0K')
+  it('formats fractional TON', () => {
+    expect(formatPoolCompact(500_000_000)).toBe('0.50 TON')
   })
 })

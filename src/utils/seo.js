@@ -7,7 +7,7 @@ const DEFAULT_OG_IMAGE = `${BASE_URL}/og.png`
 const ROUTE_META = {
   '/': {
     title: 'Hopium — Prediction Markets',
-    description: 'Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with Telegram Stars.',
+    description: 'Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with TON.',
   },
   '/my-bets': {
     title: 'My Bets — Hopium',

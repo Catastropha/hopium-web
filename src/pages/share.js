@@ -1,5 +1,5 @@
 import { html, $, mount, escapeHtml } from '../utils/dom.js'
-import { formatDate, formatDollars, formatPoolCompact } from '../utils/format.js'
+import { formatDate, formatTon, formatPoolCompact } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
 import { api, ApiError } from '../api.js'
 import { router } from '../router.js'
@@ -65,6 +65,7 @@ export async function sharePage({ params, query, container }) {
   // Show loading state
   mount(container, `
     <div class="page page--share">
+      <h1 class="sr-only">${t('sharedLink')}</h1>
       <div class="share-loading">
         <div class="skeleton skeleton--title"></div>
         <div class="skeleton skeleton--text"></div>
@@ -100,6 +101,7 @@ export async function sharePage({ params, query, container }) {
 
     mount(container, `
       <div class="page page--share">
+        <h1 class="sr-only">${t('sharedLink')}</h1>
         ${cardHtml}
       </div>
     `)
@@ -107,6 +109,7 @@ export async function sharePage({ params, query, container }) {
     if (err instanceof ApiError && err.status === 404) {
       mount(container, `
         <div class="page page--share">
+          <h1 class="sr-only">${t('sharedLink')}</h1>
           <div class="page-empty">
             <h2>${t('error')}</h2>
             <p class="text-secondary">${t('linkNotFound')}</p>
@@ -117,6 +120,7 @@ export async function sharePage({ params, query, container }) {
     } else {
       mount(container, `
         <div class="page page--share">
+          <h1 class="sr-only">${t('sharedLink')}</h1>
           <div class="page-empty">
             <h2>${t('error')}</h2>
             <p class="text-secondary">${escapeHtml(err.message || t('error'))}</p>

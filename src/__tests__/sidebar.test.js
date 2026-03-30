@@ -76,11 +76,11 @@ describe('sidebar', () => {
   it('shows balance when authenticated with balance', () => {
     store._state.token = 'tok'
     store._state.username = 'Bob'
-    store._state.balance = 1500
+    store._state.balance = 1_500_000_000
     const el = createSidebar()
     const balance = el.querySelector('.sidebar__balance')
     expect(balance).not.toBeNull()
-    expect(balance.textContent).toContain('$')
+    expect(balance.textContent).toContain('TON')
   })
 
   it('renders logo image', () => {

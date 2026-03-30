@@ -13,8 +13,8 @@ vi.mock('../utils/dom.js', async () => {
 
 vi.mock('../utils/format.js', () => ({
   formatDate: (d) => 'Mar 10, 2026',
-  formatDollars: (n) => `$${(n / 100).toFixed(2)}`,
-  formatPoolCompact: (n) => `$${Math.round(n / 100)}`,
+  formatTon: (n) => `${(n / 1_000_000_000).toFixed(2)} TON`,
+  formatPoolCompact: (n) => `${Math.round(n / 1_000_000_000)} TON`,
 }))
 
 vi.mock('../api.js', () => ({

@@ -86,7 +86,7 @@ const strings = {
     noTransactions: 'No transactions yet. Deposit to start predicting.',
     depositVia: 'Add funds',
     withdrawTo: 'Withdraw funds',
-    minBet: 'Minimum bet is $1.00',
+    minBet: 'Minimum 1 TON',
     insufficientBalance: 'Not enough balance. Deposit more to place this bet.',
     anonymous: 'Anonymous',
     selectBet: 'Select a bet to view details',
@@ -163,6 +163,11 @@ const strings = {
     depositAmount: 'Deposit amount',
     withdrawAmount: 'Withdraw amount',
 
+    // Transaction table headers
+    txDate: 'Date',
+    txType: 'Type',
+    txAmount: 'Amount',
+
     // Transaction types
     txDeposit: 'Deposit',
     txBetPlaced: 'Bet Placed',
@@ -170,32 +175,31 @@ const strings = {
     txWithdrawal: 'Withdrawal',
 
     // Auth
-    authEmailPlaceholder: 'Email address',
-    authSendCode: 'Send verification code',
-    authCheckEmail: 'Check your email',
-    authCodeSentTo: 'Code sent to',
-    authDifferentEmail: 'Use a different email',
-    authResend: 'Resend code',
-    authResendIn: 'Resend in',
-    authInvalidCode: 'Invalid code. Please try again.',
+    authInvalidCode: 'Invalid or expired code. Generate a new one in Telegram.',
     authTooManyAttempts: 'Too many attempts. Please wait.',
     signInToHopium: 'Sign in to Hopium',
     onMobileOpenTelegram: 'On mobile? Open in Telegram',
+    loginInstructions: 'Open Hopium in Telegram to get your login code.',
+    loginCodePlaceholder: 'Login code',
+    loginVerify: 'Sign in',
 
     // Deposits
     depositTitle: 'Add funds',
-    depositContinue: 'Continue to payment',
+    depositContinue: 'Continue',
     depositProcessing: 'Deposit processing',
-    depositFeeNote: 'Fees shown before confirming.',
-    depositCardNote: 'You\'ll complete payment via card in a secure window.',
-    depositMinimum: 'Minimum deposit is $1.00',
+    depositMinimum: 'Minimum deposit is 1 TON',
+    depositMemo: 'Memo (include in your transfer)',
+    depositExpiry: 'Expires in {minutes} minutes',
+    depositOpenWallet: 'Open Wallet',
+    depositInstructions: 'Send TON to the address with the memo shown. Your balance will update automatically.',
 
     // Withdrawals
     withdrawTitle: 'Withdraw funds',
     withdrawAvailable: 'Available',
-    withdrawMinimum: 'Minimum: $10.00',
-    withdrawRedirectNote: 'You\'ll be redirected to complete the withdrawal.',
-    withdrawArrivalNote: 'Funds arrive in 1-3 days.',
+    withdrawMinimum: 'Minimum: 5 TON',
+    withdrawWalletAddress: 'Your TON wallet address',
+    withdrawSent: 'Withdrawal sent',
+    withdrawTxHash: 'Transaction',
     withdrawCheckStatus: 'Check Status',
     withdrawPending: 'Pending Withdrawal',
 
@@ -204,17 +208,7 @@ const strings = {
     notificationsClear: 'Mark all read',
     notificationsEmpty: 'Markets are moving. Place a bet to start getting updates.',
 
-    // Pay with card
-    payWithCard: 'Pay with card',
-    payWithCardAmount: 'Pay with card',
-    processingBet: 'Processing your bet...',
     addFundsToStart: 'Add funds to start predicting',
-
-    // Email connect
-    profileEmail: 'Email',
-    profileEmailNotConnected: 'Not connected',
-    profileConnectEmail: 'Connect Email',
-    profileEmailConnected: 'Email connected',
 
     // Keyboard shortcuts
     kbNextBet: 'Next bet',

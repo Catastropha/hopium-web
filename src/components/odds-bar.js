@@ -11,8 +11,8 @@ import { html } from '../utils/dom.js'
 export function createOddsBar(outcomes) {
   if (!outcomes || outcomes.length < 2) {
     return html`<div class="odds-bar" role="meter" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Odds: 50/50">
-      <div class="odds-bar__yes" style="width: 50%"></div>
-      <div class="odds-bar__no" style="width: 50%"></div>
+      <div class="odds-bar__yes" style="flex: 50 0 0%"></div>
+      <div class="odds-bar__no" style="flex: 50 0 0%"></div>
     </div>`
   }
 
@@ -39,8 +39,8 @@ export function createOddsBar(outcomes) {
       aria-valuemax="100"
       aria-label="${yesLabel} ${yesPct}%, ${noLabel} ${noPct}%"
     >
-      <div class="odds-bar__yes" style="width: ${yesPct}%"></div>
-      <div class="odds-bar__no" style="width: ${noPct}%"></div>
+      <div class="odds-bar__yes" style="flex: ${yesPct} 0 0%"></div>
+      <div class="odds-bar__no" style="flex: ${noPct} 0 0%"></div>
     </div>
   `
 
@@ -64,8 +64,8 @@ export function updateOddsBar(el, outcomes) {
   const yesBar = el.querySelector('.odds-bar__yes')
   const noBar = el.querySelector('.odds-bar__no')
 
-  if (yesBar) yesBar.style.width = `${yesPct}%`
-  if (noBar) noBar.style.width = `${noPct}%`
+  if (yesBar) yesBar.style.flex = `${yesPct} 0 0%`
+  if (noBar) noBar.style.flex = `${noPct} 0 0%`
 
   el.setAttribute('aria-valuenow', String(yesPct))
 

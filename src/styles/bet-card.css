@@ -58,6 +58,9 @@
 .bet-card--closing .bet-card__time {
   color: var(--no);
   font-weight: 600;
+  background: var(--no-soft);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--r-pill);
 }
 
 .bet-card--closing {
@@ -65,7 +68,6 @@
 }
 
 .bet-card--popular {
-  border-inline-start-color: var(--cat-crypto);
 }
 
 .bet-card--popular .bet-card__pool {
@@ -74,7 +76,7 @@
 }
 
 .bet-card--has-position {
-  background: color-mix(in oklch, var(--bg-surface) 95%, var(--yes) 5%);
+  background: color-mix(in oklch, var(--bg-surface) 90%, var(--yes) 10%);
 }
 
 .bet-card--has-position .bet-card__position {
@@ -123,6 +125,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: break-word;
 }
 
 .bet-card__bar-container,
@@ -173,4 +176,20 @@
   color: var(--yes);
   border-radius: var(--r-pill);
   white-space: nowrap;
+}
+
+/* Keyboard navigation hint */
+.keyboard-hint {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.keyboard-hint kbd {
+  display: inline-block;
+  padding: 1px var(--space-xs);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 11px;
 }

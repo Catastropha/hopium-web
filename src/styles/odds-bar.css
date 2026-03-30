@@ -12,6 +12,7 @@
 .odds-bar__yes,
 .odds-bar__no {
   height: 100%;
+  flex: 1 1 0%;
 }
 
 .odds-bar__yes { background: var(--yes); }

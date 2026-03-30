@@ -1,10 +1,10 @@
 /* Hopium Web — Animations */
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Odds bar width transition */
+  /* Odds bar — flex transition */
   .odds-bar__yes,
   .odds-bar__no {
-    transition: width 300ms ease-out;
+    transition: flex 300ms ease-out;
   }
 
   /* Bet card hover */
@@ -78,8 +78,8 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      oklch(100% 0 0 / 0.04) 40%,
-      oklch(100% 0 0 / 0.04) 60%,
+      var(--shimmer) 40%,
+      var(--shimmer) 60%,
       transparent 100%
     );
     transform: translateX(-100%);
@@ -97,7 +97,7 @@
 
   /* Button hover feedback */
   .btn {
-    transition: filter 100ms ease-out, background-color 100ms ease-out;
+    transition: opacity 100ms ease-out, background-color 100ms ease-out;
   }
 
   /* Outcome button state change */
@@ -113,7 +113,7 @@
 
   @keyframes outcome-pulse {
     0% { transform: scale(1); }
-    30% { transform: scale(1.04); box-shadow: 0 0 16px oklch(72% 0.15 152 / 0.3); }
+    30% { transform: scale(1.04); box-shadow: 0 0 16px var(--focus-ring); }
     100% { transform: scale(1); box-shadow: none; }
   }
 

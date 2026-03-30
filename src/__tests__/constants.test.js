@@ -1,21 +1,25 @@
 import { describe, it, expect } from 'vitest'
-import { CATEGORIES, MIN_BET, MIN_DEPOSIT, MIN_WITHDRAWAL, PLATFORM_FEE, TMA_URL } from '../constants.js'
+import { CATEGORIES, MIN_BET, MIN_DEPOSIT, MIN_WITHDRAWAL, NANOTON, PLATFORM_FEE, TMA_URL } from '../constants.js'
 
 describe('constants', () => {
   it('has all expected categories', () => {
     expect(CATEGORIES).toEqual(['Sports', 'Politics', 'Crypto', 'Culture', 'Tech'])
   })
 
-  it('MIN_BET is 100 cents ($1.00)', () => {
-    expect(MIN_BET).toBe(100)
+  it('NANOTON is 1 billion', () => {
+    expect(NANOTON).toBe(1_000_000_000)
   })
 
-  it('MIN_DEPOSIT is 100 cents ($1.00)', () => {
-    expect(MIN_DEPOSIT).toBe(100)
+  it('MIN_BET is 1 TON', () => {
+    expect(MIN_BET).toBe(1_000_000_000)
   })
 
-  it('MIN_WITHDRAWAL is 1000 cents ($10.00)', () => {
-    expect(MIN_WITHDRAWAL).toBe(1000)
+  it('MIN_DEPOSIT is 1 TON', () => {
+    expect(MIN_DEPOSIT).toBe(1_000_000_000)
+  })
+
+  it('MIN_WITHDRAWAL is 5 TON', () => {
+    expect(MIN_WITHDRAWAL).toBe(5_000_000_000)
   })
 
   it('PLATFORM_FEE is 5%', () => {

@@ -1,7 +1,7 @@
 import { html, $ } from '../utils/dom.js'
 import { t } from '../i18n.js'
 import { store } from '../store.js'
-import { formatDollarsCompact } from '../utils/format.js'
+import { formatTonCompact } from '../utils/format.js'
 
 const ICON_HOME = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 const ICON_CHART = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>`
@@ -55,7 +55,7 @@ export function createSidebar() {
   const initial = username ? username.charAt(0).toUpperCase() : null
 
   const balance = store.get('balance')
-  const balanceDisplay = balance != null ? `<span class="sidebar__balance" aria-live="polite">${formatDollarsCompact(balance)}</span>` : ''
+  const balanceDisplay = balance != null ? `<span class="sidebar__balance" aria-live="polite">${formatTonCompact(balance)}</span>` : ''
 
   const bottomHtml = store.isAuthenticated
     ? `<div class="sidebar__user-section">
@@ -102,7 +102,7 @@ export function createSidebar() {
     const un = store.get('username')
     const ini = un ? un.charAt(0).toUpperCase() : null
     const bal = store.get('balance')
-    const balDisplay = bal != null ? `<span class="sidebar__balance" aria-live="polite">${formatDollarsCompact(bal)}</span>` : ''
+    const balDisplay = bal != null ? `<span class="sidebar__balance" aria-live="polite">${formatTonCompact(bal)}</span>` : ''
     if (store.isAuthenticated) {
       bottom.innerHTML = `<div class="sidebar__user-section">
         ${balDisplay}
@@ -142,17 +142,10 @@ export function createSidebar() {
   })
 
   store.on('balance', () => {
-    const bottom = $('.sidebar__bottom', el)
-    // Re-render bottom section
-    const un = store.get('username')
-    const ini = un ? un.charAt(0).toUpperCase() : null
+    const balEl = el.querySelector('.sidebar__balance')
     const bal = store.get('balance')
-    const balDisplay = bal != null ? `<span class="sidebar__balance" aria-live="polite">${formatDollarsCompact(bal)}</span>` : ''
-    if (store.isAuthenticated) {
-      bottom.innerHTML = `<div class="sidebar__user-section">
-        ${balDisplay}
-        <a href="/profile" data-link class="sidebar__avatar" aria-label="${t('profile')}" data-tooltip="${un || t('profile')}">${ini}</a>
-      </div>`
+    if (balEl && bal != null) {
+      balEl.textContent = formatTonCompact(bal)
     }
   })
 

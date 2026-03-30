@@ -31,15 +31,15 @@ describe('odds-bar', () => {
       const el = createOddsBar(outcomes)
       const yesBar = el.querySelector('.odds-bar__yes')
       const noBar = el.querySelector('.odds-bar__no')
-      expect(yesBar.style.width).toBe('30%')
-      expect(noBar.style.width).toBe('70%')
+      expect(yesBar.style.flex).toBe('30 0 0%')
+      expect(noBar.style.flex).toBe('70 0 0%')
     })
 
     it('defaults to 50/50 when outcomes are missing', () => {
       const el = createOddsBar(null)
       expect(el.getAttribute('aria-valuenow')).toBe('50')
       const yesBar = el.querySelector('.odds-bar__yes')
-      expect(yesBar.style.width).toBe('50%')
+      expect(yesBar.style.flex).toBe('50 0 0%')
     })
 
     it('defaults to 50/50 when outcomes have less than 2 items', () => {
@@ -88,7 +88,7 @@ describe('odds-bar', () => {
   })
 
   describe('updateOddsBar', () => {
-    it('updates width styles', () => {
+    it('updates flex styles', () => {
       const outcomes = [
         { id: '1', label: 'Yes', pool: 50 },
         { id: '2', label: 'No', pool: 50 },
@@ -103,8 +103,8 @@ describe('odds-bar', () => {
 
       const yesBar = el.querySelector('.odds-bar__yes')
       const noBar = el.querySelector('.odds-bar__no')
-      expect(yesBar.style.width).toBe('80%')
-      expect(noBar.style.width).toBe('20%')
+      expect(yesBar.style.flex).toBe('80 0 0%')
+      expect(noBar.style.flex).toBe('20 0 0%')
     })
 
     it('updates ARIA attributes', () => {

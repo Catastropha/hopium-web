@@ -200,11 +200,20 @@ export function showShortcutsOverlay() {
     overlayEl.querySelector('.shortcuts-overlay__backdrop').addEventListener('click', hideShortcutsOverlay)
     overlayEl.querySelector('.shortcuts-overlay__close').addEventListener('click', hideShortcutsOverlay)
 
-    // Focus trap — Tab cycles to close button
+    // Focus trap — Tab cycles through focusable elements within overlay
     overlayEl.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') {
-        e.preventDefault()
-        overlayEl.querySelector('.shortcuts-overlay__close')?.focus()
+        const focusable = overlayEl.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])')
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
       }
     })
   }

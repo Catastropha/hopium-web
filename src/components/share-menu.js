@@ -140,7 +140,7 @@ export function openShareMenu(trigger, bet) {
 function positionMenu(menu, trigger) {
   const rect = trigger.getBoundingClientRect()
   menu.style.position = 'fixed'
-  menu.style.zIndex = '1000'
+  menu.style.zIndex = '1000' // matches --z-share-menu
 
   const menuWidth = 220
   let left = rect.left + rect.width / 2 - menuWidth / 2

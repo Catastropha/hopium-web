@@ -5,8 +5,8 @@ let _lang = null
 let _numFmt = null
 let _numFmtCompact = null
 let _dateFmt = null
-let _dollarFmt = null
-let _dollarFmtCompact = null
+let _tonFmt = null
+let _tonFmtCompact = null
 
 function ensureFormatters() {
   const lang = getLang()
@@ -15,11 +15,11 @@ function ensureFormatters() {
     _numFmt = new Intl.NumberFormat(lang, { maximumFractionDigits: 0 })
     _numFmtCompact = new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 })
     _dateFmt = new Intl.DateTimeFormat(lang, { month: 'short', day: 'numeric', year: 'numeric' })
-    _dollarFmt = new Intl.NumberFormat('en-US', {
-      style: 'currency', currency: 'USD', minimumFractionDigits: 2,
+    _tonFmt = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2,
     })
-    _dollarFmtCompact = new Intl.NumberFormat('en-US', {
-      style: 'currency', currency: 'USD', notation: 'compact',
+    _tonFmtCompact = new Intl.NumberFormat('en-US', {
+      notation: 'compact', maximumFractionDigits: 1,
     })
   }
 }
@@ -41,27 +41,27 @@ export function formatCompact(n) {
 }
 
 /**
- * Format cents as dollars: 15000 → "$150.00"
+ * Format nanotons as TON: 1500000000 → "1.50 TON"
  */
-export function formatDollars(n) {
+export function formatTon(n) {
   ensureFormatters()
-  return _dollarFmt.format(n / 100)
+  return `${_tonFmt.format(n / 1_000_000_000)} TON`
 }
 
 /**
- * Format cents as compact dollars: 1500000 → "$15K"
+ * Format nanotons as compact TON: 15000000000000 → "15K TON"
  */
-export function formatDollarsCompact(n) {
+export function formatTonCompact(n) {
   ensureFormatters()
-  return _dollarFmtCompact.format(n / 100)
+  return `${_tonFmtCompact.format(n / 1_000_000_000)} TON`
 }
 
 /**
- * Format signed dollar amount: +$1.50 or -$0.50
+ * Format signed TON amount: +1.50 TON or -0.50 TON
  */
-export function formatSignedDollars(n) {
+export function formatSignedTon(n) {
   const sign = n >= 0 ? '+' : ''
-  return `${sign}${formatDollars(n)}`
+  return `${sign}${formatTon(n)}`
 }
 
 /**
@@ -80,14 +80,17 @@ export function formatPercent(n) {
 }
 
 /**
- * Format cents as compact pool string for share text / OG tags: "$150", "$1.5K"
+ * Format nanotons as compact pool string for share text / OG tags: "1.5 TON", "15K TON"
  */
-export function formatPoolCompact(cents) {
-  const dollars = cents / 100
-  if (dollars >= 1000) {
-    return `$${(dollars / 1000).toFixed(dollars >= 10000 ? 0 : 1)}K`
+export function formatPoolCompact(nanotons) {
+  const ton = nanotons / 1_000_000_000
+  if (ton >= 1000) {
+    return `${(ton / 1000).toFixed(ton >= 10000 ? 0 : 1)}K TON`
   }
-  return `$${Math.round(dollars)}`
+  if (ton >= 1) {
+    return `${Math.round(ton)} TON`
+  }
+  return `${ton.toFixed(2)} TON`
 }
 
 /**

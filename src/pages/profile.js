@@ -1,6 +1,6 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatDollars, formatNumber, formatSignedDollars, formatDate,
+  formatTon, formatNumber, formatSignedTon, formatDate,
 } from '../utils/format.js'
 import { MIN_DEPOSIT, MIN_WITHDRAWAL } from '../constants.js'
 import { localize, t } from '../i18n.js'
@@ -58,7 +58,7 @@ function renderBalanceCard(balance) {
   return `
     <div class="balance-card">
       <div class="balance-card__label text-secondary">${t('balance')}</div>
-      <div class="balance-card__value">${formatDollars(bal)}</div>
+      <div class="balance-card__value">${formatTon(bal)}</div>
       ${hint}
       <div class="balance-card__actions">
         <button class="btn btn-primary balance-deposit-btn">${t('deposit')}</button>
@@ -76,19 +76,18 @@ function renderDepositForm() {
     <div class="balance-flow balance-flow--deposit">
       <h4 class="balance-flow__title" id="deposit-title">${t('depositTitle')}</h4>
       <div class="balance-flow__input-wrap">
-        <span class="balance-flow__icon">$</span>
-        <input type="number" class="balance-flow__input" min="1" step="0.01" placeholder="10.00" aria-labelledby="deposit-title" />
+        <span class="balance-flow__icon">TON</span>
+        <input type="number" class="balance-flow__input" min="1" step="0.1" placeholder="5" aria-labelledby="deposit-title" />
       </div>
       <div class="balance-flow__quick">
-        <button class="stake-quick" data-amount="5">$5</button>
-        <button class="stake-quick" data-amount="10">$10</button>
-        <button class="stake-quick" data-amount="25">$25</button>
-        <button class="stake-quick" data-amount="50">$50</button>
+        <button class="stake-quick" data-amount="1">1</button>
+        <button class="stake-quick" data-amount="2">2</button>
+        <button class="stake-quick" data-amount="5">5</button>
+        <button class="stake-quick" data-amount="10">10</button>
       </div>
       <button class="btn btn-primary balance-flow__confirm">${t('depositContinue')}</button>
-      <p class="balance-flow__note text-secondary">${t('depositCardNote')}<br>${t('depositFeeNote')}</p>
       <div class="balance-flow__error" role="alert" hidden></div>
-      <div class="balance-flow__message" hidden></div>
+      <div class="balance-flow__deposit-info" hidden></div>
     </div>
   `
 }
@@ -101,12 +100,14 @@ function renderWithdrawForm(balance) {
     <div class="balance-flow balance-flow--withdraw">
       <h4 class="balance-flow__title" id="withdraw-title">${t('withdrawTitle')}</h4>
       <div class="balance-flow__input-wrap">
-        <span class="balance-flow__icon">$</span>
-        <input type="number" class="balance-flow__input" min="10" step="0.01" placeholder="50.00" aria-labelledby="withdraw-title" />
+        <span class="balance-flow__icon">TON</span>
+        <input type="number" class="balance-flow__input balance-flow__amount" min="5" step="0.1" placeholder="5" aria-labelledby="withdraw-title" />
       </div>
-      <p class="balance-flow__note text-secondary">${t('withdrawAvailable')}: ${formatDollars(balance || 0)}<br>${t('withdrawMinimum')}</p>
+      <div class="balance-flow__input-wrap">
+        <input type="text" class="balance-flow__input balance-flow__wallet" placeholder="${t('withdrawWalletAddress')}" aria-label="${t('withdrawWalletAddress')}" />
+      </div>
+      <p class="balance-flow__note text-secondary">${t('withdrawAvailable')}: ${formatTon(balance || 0)}<br>${t('withdrawMinimum')}</p>
       <button class="btn btn-primary balance-flow__confirm">${t('withdraw')}</button>
-      <p class="balance-flow__note text-secondary">${t('withdrawRedirectNote')}<br>${t('withdrawArrivalNote')}</p>
       <div class="balance-flow__error" role="alert" hidden></div>
     </div>
   `
@@ -117,7 +118,7 @@ function renderWithdrawForm(balance) {
  */
 function renderTransactions(transactions) {
   if (!transactions || transactions.length === 0) {
-    return `<div class="page-empty"><p class="text-secondary">${t('noTransactions')}</p></div>`
+    return `<div class="page-empty"><p class="text-secondary">${t('noTransactions')}</p><button class="btn btn-primary page-empty__deposit">${t('deposit')}</button></div>`
   }
 
   const rows = transactions.map((tx) => {
@@ -125,8 +126,8 @@ function renderTransactions(transactions) {
     const config = txTypes[tx.type] || txTypes.deposit
     const amountClass = tx.amount >= 0 ? 'text-yes' : 'text-no'
     const amountStr = tx.amount >= 0
-      ? `+${formatDollars(tx.amount)}`
-      : `-${formatDollars(Math.abs(tx.amount))}`
+      ? `+${formatTon(tx.amount)}`
+      : `-${formatTon(Math.abs(tx.amount))}`
 
     return `
       <tr class="tx-row">
@@ -142,6 +143,13 @@ function renderTransactions(transactions) {
 
   return `
     <table class="tx-table">
+      <thead>
+        <tr>
+          <th>${t('txDate')}</th>
+          <th>${t('txType')}</th>
+          <th>${t('txAmount')}</th>
+        </tr>
+      </thead>
       <tbody>${rows}</tbody>
     </table>
   `
@@ -172,7 +180,7 @@ export async function profilePage({ params, query, container }) {
       <div class="profile-content">
         <div class="balance-card-wrap"></div>
         <div class="balance-flow-wrap"></div>
-        <div class="email-connect-wrap"></div>
+
         <div class="tx-section">
           <h3 class="tx-section__title">${t('transactions')}</h3>
           <div class="tx-list">
@@ -180,7 +188,7 @@ export async function profilePage({ params, query, container }) {
             <div class="skeleton skeleton--text"></div>
             <div class="skeleton skeleton--text"></div>
           </div>
-          <div class="tx-footer"></div>
+          <div class="tx-footer" aria-live="polite"></div>
         </div>
       </div>
     </div>
@@ -190,7 +198,6 @@ export async function profilePage({ params, query, container }) {
 
   const balanceWrap = $('.balance-card-wrap', page)
   const flowWrap = $('.balance-flow-wrap', page)
-  const emailWrap = $('.email-connect-wrap', page)
   const txList = $('.tx-list', page)
   const txFooter = $('.tx-footer', page)
 
@@ -198,119 +205,6 @@ export async function profilePage({ params, query, container }) {
   function renderBalance() {
     balanceWrap.innerHTML = renderBalanceCard(balance)
   }
-
-  // Email connect section
-  function renderEmailConnect() {
-    const email = store.get('email')
-    if (email) {
-      emailWrap.innerHTML = `
-        <div class="email-section">
-          <span class="email-section__label text-secondary">${t('profileEmail')}</span>
-          <span class="email-section__value">${escapeHtml(email)}</span>
-        </div>
-      `
-    } else {
-      emailWrap.innerHTML = `
-        <div class="email-section">
-          <span class="email-section__label text-secondary">${t('profileEmail')}</span>
-          <span class="email-section__value text-secondary">${t('profileEmailNotConnected')}</span>
-          <button class="btn btn-secondary email-connect-btn">${t('profileConnectEmail')}</button>
-        </div>
-      `
-      const connectBtn = $('.email-connect-btn', emailWrap)
-      if (connectBtn) {
-        connectBtn.addEventListener('click', startEmailConnect)
-      }
-    }
-  }
-
-  let connectEmail = '' // tracks email during connect flow
-
-  function startEmailConnect() {
-    emailWrap.innerHTML = `
-      <div class="email-section">
-        <span class="email-section__label text-secondary">${t('profileEmail')}</span>
-        <div class="email-connect-flow">
-          <input type="email" class="login-input email-connect-input" placeholder="${escapeHtml(t('authEmailPlaceholder'))}" />
-          <div class="email-connect-actions">
-            <button class="btn btn-primary email-connect-send">${t('authSendCode')}</button>
-            <button class="btn btn-secondary email-connect-cancel">${t('close')}</button>
-          </div>
-          <div class="login-error email-connect-error" role="alert" hidden></div>
-        </div>
-      </div>
-    `
-    const input = $('.email-connect-input', emailWrap)
-    const sendBtn = $('.email-connect-send', emailWrap)
-    const cancelBtn = $('.email-connect-cancel', emailWrap)
-    const errorEl = $('.email-connect-error', emailWrap)
-    input.focus()
-
-    sendBtn.addEventListener('click', () => sendConnectCode(input, sendBtn, errorEl))
-    cancelBtn.addEventListener('click', renderEmailConnect)
-  }
-
-  async function sendConnectCode(input, sendBtn, errorEl) {
-    connectEmail = input.value.trim()
-    if (!connectEmail || !connectEmail.includes('@')) return
-
-    sendBtn.disabled = true
-    sendBtn.textContent = '...'
-    errorEl.hidden = true
-
-    try {
-      await api.request('POST', '/v1/auth/email', { body: { email: connectEmail } })
-      showConnectCodeStep()
-    } catch (err) {
-      errorEl.textContent = err.message || t('error')
-      errorEl.hidden = false
-      sendBtn.disabled = false
-      sendBtn.textContent = t('authSendCode')
-    }
-  }
-
-  function showConnectCodeStep() {
-    emailWrap.innerHTML = `
-      <div class="email-section">
-        <span class="email-section__label text-secondary">${t('profileEmail')}</span>
-        <div class="email-connect-flow">
-          <p class="text-secondary">${t('authCodeSentTo')} ${escapeHtml(connectEmail)}</p>
-          <input type="text" class="login-input email-connect-code" placeholder="000000" maxlength="6" inputmode="numeric" />
-          <button class="btn btn-primary email-connect-verify">${t('profileConnectEmail')}</button>
-          <div class="login-error email-connect-error" role="alert" hidden></div>
-        </div>
-      </div>
-    `
-    const codeInput = $('.email-connect-code', emailWrap)
-    const verifyBtn = $('.email-connect-verify', emailWrap)
-    const verifyError = $('.email-connect-error', emailWrap)
-    codeInput.focus()
-
-    verifyBtn.addEventListener('click', () => verifyConnectCode(codeInput, verifyBtn, verifyError))
-  }
-
-  async function verifyConnectCode(codeInput, verifyBtn, verifyError) {
-    const code = codeInput.value.trim()
-    if (code.length !== 6) return
-
-    verifyBtn.disabled = true
-    verifyBtn.textContent = '...'
-    verifyError.hidden = true
-
-    try {
-      await api.post('/v1/auth/email/connect', { email: connectEmail, code })
-      store.set({ email: connectEmail })
-      showToast({ message: t('profileEmailConnected'), type: 'success' })
-      renderEmailConnect()
-    } catch (err) {
-      verifyError.textContent = err.message || t('error')
-      verifyError.hidden = false
-      verifyBtn.disabled = false
-      verifyBtn.textContent = t('profileConnectEmail')
-    }
-  }
-
-  renderEmailConnect()
 
   // Fetch balance and transactions
   async function fetchTransactions(append = false) {
@@ -369,6 +263,10 @@ export async function profilePage({ params, query, container }) {
     if (activeFlow === type) {
       activeFlow = null
       flowWrap.innerHTML = ''
+      // Restore focus to the button that was clicked
+      const focusSelector = type === 'deposit' ? '.balance-deposit-btn' : '.balance-withdraw-btn'
+      const btn = balanceWrap.querySelector(focusSelector)
+      if (btn) btn.focus()
       return
     }
 
@@ -388,9 +286,9 @@ export async function profilePage({ params, query, container }) {
     const input = $('.balance-flow__input', flowWrap)
     const confirmBtn = $('.balance-flow__confirm', flowWrap)
     const errorEl = $('.balance-flow__error', flowWrap)
-    const messageEl = $('.balance-flow__message', flowWrap)
+    const infoEl = $('.balance-flow__deposit-info', flowWrap)
 
-    // Quick amount buttons
+    // Quick amount buttons (data-amount is TON value)
     function onQuickClick(e) {
       const btn = e.target.closest('.stake-quick')
       if (btn) {
@@ -400,10 +298,29 @@ export async function profilePage({ params, query, container }) {
     flowWrap.addEventListener('click', onQuickClick)
     cleanups.push(() => flowWrap.removeEventListener('click', onQuickClick))
 
+    // Refresh balance when user returns from wallet
+    let previousBalance = balance
+    function onVisibilityChange() {
+      if (!document.hidden && store.isAuthenticated) {
+        api.get('/v1/balance/', { size: 1 }).then(res => {
+          if (res.balance != null && res.balance !== previousBalance) {
+            previousBalance = res.balance
+            balance = res.balance
+            store.set({ balance })
+            renderBalance()
+            showToast({ message: t('depositSuccess'), type: 'success' })
+            // Reset deposit form
+            activeFlow = null
+            flowWrap.innerHTML = ''
+          }
+        }).catch(() => {})
+      }
+    }
+
     // Confirm deposit
     async function onConfirm() {
-      const dollars = parseFloat(input.value) || 0
-      const amount = Math.round(dollars * 100) // convert to cents
+      const ton = parseFloat(input.value) || 0
+      const amount = Math.round(ton * 1_000_000_000)
       if (amount < MIN_DEPOSIT) {
         errorEl.textContent = t('depositMinimum')
         errorEl.hidden = false
@@ -413,24 +330,59 @@ export async function profilePage({ params, query, container }) {
       confirmBtn.disabled = true
       confirmBtn.textContent = '...'
       errorEl.hidden = true
-      messageEl.hidden = true
+      infoEl.hidden = true
 
       try {
         const res = await api.post('/v1/balance/deposit', { amount })
 
-        if (res.widget_config) {
-          // Open Onramper widget
-          const { createOnramperWidget } = await import('../components/onramper-widget.js')
-          const modal = createOnramperWidget(res.widget_config)
-          document.body.appendChild(modal)
+        // Show deposit info with memo and open wallet button
+        const expiresAt = new Date(res.expires_at)
+        const minutesLeft = Math.max(0, Math.round((expiresAt - Date.now()) / 60_000))
+
+        infoEl.innerHTML = `
+          <div class="deposit-info">
+            <div class="deposit-info__row">
+              <span class="text-secondary">${t('depositMemo')}</span>
+              <div class="deposit-info__memo-row">
+                <code class="deposit-info__memo">${res.memo}</code>
+                <button class="btn btn-secondary deposit-info__copy" aria-label="${t('copyLink')}">${t('copyLink')}</button>
+              </div>
+            </div>
+            <div class="deposit-info__row">
+              <span class="text-secondary">${t('depositExpiry').replace('{minutes}', minutesLeft)}</span>
+            </div>
+            <button class="btn btn-primary deposit-info__open-wallet">${t('depositOpenWallet')}</button>
+            <p class="deposit-info__instructions text-secondary">${t('depositInstructions')}</p>
+          </div>
+        `
+        infoEl.hidden = false
+
+        // Copy memo
+        const copyBtn = $('.deposit-info__copy', infoEl)
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(res.memo).catch(() => {})
+            showToast({ message: t('copied'), type: 'success' })
+          })
         }
 
-        messageEl.textContent = t('depositSuccess')
-        messageEl.hidden = false
+        // Open wallet
+        const openBtn = $('.deposit-info__open-wallet', infoEl)
+        if (openBtn) {
+          openBtn.addEventListener('click', () => {
+            window.open(res.ton_deep_link, '_blank')
+            openBtn.disabled = true
+            openBtn.innerHTML = '<span class="load-more-spinner" style="width:16px;height:16px;border-width:2px;margin:0;display:inline-block;vertical-align:middle"></span> ' + t('depositProcessing')
+          })
+        }
+
+        // Listen for user returning from wallet
+        document.addEventListener('visibilitychange', onVisibilityChange)
+        cleanups.push(() => document.removeEventListener('visibilitychange', onVisibilityChange))
+
         confirmBtn.textContent = t('depositContinue')
         confirmBtn.disabled = false
       } catch (err) {
-        // Error-code-specific messages per spec
         const msg = err instanceof ApiError && err.code === 'deposit-1'
           ? t('paymentUnavailable')
           : (err.message || t('error'))
@@ -447,13 +399,16 @@ export async function profilePage({ params, query, container }) {
 
   // Withdraw flow
   function setupWithdrawFlow() {
-    const input = $('.balance-flow__input', flowWrap)
+    const amountInput = $('.balance-flow__amount', flowWrap)
+    const walletInput = $('.balance-flow__wallet', flowWrap)
     const confirmBtn = $('.balance-flow__confirm', flowWrap)
     const errorEl = $('.balance-flow__error', flowWrap)
 
     async function onConfirm() {
-      const dollars = parseFloat(input.value) || 0
-      const amount = Math.round(dollars * 100) // convert to cents
+      const ton = parseFloat(amountInput.value) || 0
+      const amount = Math.round(ton * 1_000_000_000)
+      const walletAddress = walletInput.value.trim()
+
       if (amount < MIN_WITHDRAWAL) {
         errorEl.textContent = t('withdrawMinimum')
         errorEl.hidden = false
@@ -464,22 +419,22 @@ export async function profilePage({ params, query, container }) {
         errorEl.hidden = false
         return
       }
+      if (walletAddress.length < 48 || walletAddress.length > 67) {
+        errorEl.textContent = t('withdrawWalletAddress')
+        errorEl.hidden = false
+        return
+      }
 
       confirmBtn.disabled = true
       confirmBtn.textContent = '...'
       errorEl.hidden = true
 
       try {
-        const res = await api.post('/v1/balance/withdraw', { amount })
+        const res = await api.post('/v1/balance/withdraw', { amount, wallet_address: walletAddress })
 
-        // Open MoonPay widget URL
-        if (res.moonpay_widget_url) {
-          window.open(res.moonpay_widget_url, '_blank')
-        }
-
-        // Show success, close flow
+        // Show success with withdrawal ID
         activeFlow = null
-        flowWrap.innerHTML = `<div class="balance-flow__success text-yes">${t('withdrawSuccess')}</div>`
+        flowWrap.innerHTML = `<div class="balance-flow__success text-yes">${t('withdrawSent')}</div>`
         setTimeout(() => {
           flowWrap.innerHTML = ''
         }, 3000)
@@ -487,11 +442,10 @@ export async function profilePage({ params, query, container }) {
         // Refresh transactions
         fetchTransactions(false)
       } catch (err) {
-        // Error-code-specific messages per spec
         const ERROR_MSGS = {
-          'withdraw-2': t('withdrawNoDeposit'),
-          'withdraw-3': t('withdrawInsufficient'),
-          'withdraw-4': t('withdrawFailed'),
+          'withdraw-1': t('withdrawMinimum'),
+          'withdraw-2': t('withdrawInsufficient'),
+          'withdraw-3': t('withdrawFailed'),
         }
         const msg = err instanceof ApiError && ERROR_MSGS[err.code]
           ? ERROR_MSGS[err.code]
@@ -517,6 +471,15 @@ export async function profilePage({ params, query, container }) {
   }
   balanceWrap.addEventListener('click', onBalanceAction)
   cleanups.push(() => balanceWrap.removeEventListener('click', onBalanceAction))
+
+  // Event: empty-state deposit button
+  function onTxEmptyDeposit(e) {
+    if (e.target.closest('.page-empty__deposit')) {
+      showFlow('deposit')
+    }
+  }
+  txList.addEventListener('click', onTxEmptyDeposit)
+  cleanups.push(() => txList.removeEventListener('click', onTxEmptyDeposit))
 
   // Event: load more transactions
   function onTxFooterClick(e) {

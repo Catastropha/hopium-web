@@ -21,7 +21,6 @@ function loadPersistedAuth() {
         userId: data.userId,
         username: data.username,
         photoUrl: data.photoUrl,
-        email: data.email,
       }
     }
     return data
@@ -39,7 +38,6 @@ function persistAuth(state) {
     userId: state.userId,
     username: state.username,
     photoUrl: state.photoUrl,
-    email: state.email,
   }
   localStorage.setItem(LS_KEY, JSON.stringify(data))
 }
@@ -55,7 +53,6 @@ const state = {
   userId: persisted.userId || null,
   username: persisted.username || null,
   photoUrl: persisted.photoUrl || null,
-  email: persisted.email || null,
   balance: null,
 
   // UI
@@ -90,7 +87,7 @@ export const store = {
       }
     }
     // Persist auth-related changes
-    const authKeys = ['token', 'tokenExp', 'refreshToken', 'refreshTokenExp', 'userId', 'username', 'photoUrl', 'email']
+    const authKeys = ['token', 'tokenExp', 'refreshToken', 'refreshTokenExp', 'userId', 'username', 'photoUrl']
     if (changed.some(k => authKeys.includes(k))) {
       persistAuth(state)
     }
@@ -131,7 +128,6 @@ export const store = {
       userId: null,
       username: null,
       photoUrl: null,
-      email: null,
       balance: null,
     })
     localStorage.removeItem(LS_KEY)

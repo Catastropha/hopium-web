@@ -28,14 +28,14 @@
 }
 
 .notification--unread {
-  border-inline-start: 3px solid var(--accent);
+  border-inline-start: 3px solid var(--yes);
 }
 
 .notification__dot {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.8;
-  color: var(--accent);
+  color: var(--yes);
 }
 
 .notification--read .notification__dot {
@@ -45,7 +45,7 @@
 .notification__icon {
   flex-shrink: 0;
   color: var(--text-secondary);
-  margin-block-start: 2px;
+  margin-block-start: var(--space-xs);
 }
 
 .notification__content {
@@ -54,9 +54,9 @@
 }
 
 .notification__title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  margin-block-end: 2px;
+  margin-block-end: var(--space-xs);
 }
 
 .notification__body {
@@ -65,7 +65,7 @@
 }
 
 .notification__time {
-  font-size: 12px;
+  font-size: 11px;
   margin-block-start: var(--space-xs);
 }
 

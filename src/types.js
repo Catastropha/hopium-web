@@ -13,7 +13,7 @@
  * @typedef {Object} Outcome
  * @property {string} id
  * @property {LocalizedString|string} label
- * @property {number} pool - Total cents staked on this outcome
+ * @property {number} pool - Total nanotons staked on this outcome
  * @property {number} [odds] - Current payout multiplier
  * @property {boolean} [is_winner] - True if this outcome won (resolved bets only)
  */
@@ -23,8 +23,8 @@
 /**
  * @typedef {Object} UserPosition
  * @property {string} outcome_id
- * @property {number} amount - Cents staked by the user
- * @property {number} [payout] - Cents paid out (resolved bets only)
+ * @property {number} amount - Nanotons staked by the user
+ * @property {number} [payout] - Nanotons paid out (resolved bets only)
  */
 
 // ── Bet ──────────────────────────────────────────────────────────
@@ -86,18 +86,6 @@
  * @property {string} user_id
  */
 
-// ── Email Auth Response ─────────────────────────────────────────
-
-/**
- * @typedef {Object} EmailAuthResponse
- * @property {string} token
- * @property {number} token_exp
- * @property {string} refresh_token
- * @property {number} refresh_token_exp
- * @property {string} user_id
- * @property {boolean} is_new_user
- */
-
 // ── Balance Response ─────────────────────────────────────────────
 
 /**
@@ -140,43 +128,26 @@
 
 /**
  * @typedef {Object} DepositResponse
- * @property {Object} widget_config
- * @property {number} amount
+ * @property {string} ton_deep_link
+ * @property {string} memo
+ * @property {number} amount_nanoton
+ * @property {string} expires_at
  */
 
 /**
  * @typedef {Object} WithdrawResponse
  * @property {string} withdrawal_id
  * @property {number} amount
- * @property {string} moonpay_widget_url
  */
 
 /**
  * @typedef {Object} WithdrawalStatus
  * @property {string} id
  * @property {number} amount
- * @property {'pending'|'processing'|'crypto_sent'|'completed'|'failed'} status
+ * @property {'pending'|'completed'|'failed'} status
+ * @property {string|null} ton_tx_hash
  * @property {string} created_at
  * @property {string|null} completed_at
- */
-
-// ── Widget Config ────────────────────────────────────────────────
-
-/**
- * @typedef {Object} WidgetConfig
- * @property {string} apiKey
- * @property {number} defaultAmount
- * @property {string} defaultCrypto
- * @property {string} onlyCryptos
- * @property {string} onlyNetworks
- * @property {string} walletAddress
- * @property {string} partnerContext
- * @property {boolean} isAmountEditable
- */
-
-/**
- * @typedef {Object} PositionCardResponse
- * @property {WidgetConfig} widget_config
  */
 
 // ── Notification ─────────────────────────────────────────────────

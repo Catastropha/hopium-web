@@ -92,7 +92,7 @@
 }
 
 .filter-bar__country-flag {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -116,8 +116,8 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: var(--space-xs);
-  z-index: 30;
-  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+  z-index: var(--z-dropdown);
+  box-shadow: 0 8px 24px var(--overlay);
 }
 
 .filter-bar__dropdown[hidden] {

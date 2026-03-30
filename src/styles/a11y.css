@@ -4,7 +4,7 @@
   position: absolute;
   top: -100%;
   inset-inline-start: var(--space-lg);
-  z-index: 1000;
+  z-index: var(--z-share-menu);
   padding: var(--space-sm) var(--space-lg);
   background: var(--yes);
   color: var(--text-inverse);

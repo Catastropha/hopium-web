@@ -1,6 +1,6 @@
 import { html, $, $$, mount, escapeHtml } from '../utils/dom.js'
 import {
-  formatDollars, formatDollarsCompact, formatSignedDollars,
+  formatTon, formatTonCompact, formatSignedTon,
   formatTimeRemaining, formatNumber,
 } from '../utils/format.js'
 import { localize, t } from '../i18n.js'
@@ -56,19 +56,19 @@ function renderPnlCard(bets) {
   return `
     <div class="pnl-card">
       <div class="pnl-card__label text-secondary">${t('totalPnL')}</div>
-      <div class="pnl-card__value ${pnlClass}">${formatSignedDollars(pnl)}</div>
+      <div class="pnl-card__value ${pnlClass}">${formatSignedTon(pnl)}</div>
       <div class="pnl-card__breakdown">
         <div class="pnl-card__item">
           <span class="text-secondary">${t('staked')}</span>
-          <span>${formatDollars(staked)}</span>
+          <span>${formatTon(staked)}</span>
         </div>
         <div class="pnl-card__item">
           <span class="text-secondary">${t('returned')}</span>
-          <span>${formatDollars(returned)}</span>
+          <span>${formatTon(returned)}</span>
         </div>
         <div class="pnl-card__item">
           <span class="text-secondary">${t('pending')}</span>
-          <span>${formatDollars(pending)}</span>
+          <span>${formatTon(pending)}</span>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@ export async function myBetsPage({ params, query, container, detailPanel }) {
       <div class="bet-list" role="list" aria-live="polite" aria-label="${t('yourBets')}">
         ${renderSkeletons(3)}
       </div>
-      <div class="bet-list__footer"></div>
+      <div class="bet-list__footer" aria-live="polite"></div>
     </div>
   `
 

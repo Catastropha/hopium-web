@@ -36,9 +36,9 @@ vi.mock('../constants.js', () => ({
   API_BASE: 'https://api.test.com',
   CATEGORIES: ['Sports', 'Politics', 'Crypto', 'Culture', 'Tech'],
   CATEGORY_COLORS: { Crypto: '#F59E0B' },
-  MIN_BET: 100,
-  MIN_DEPOSIT: 100,
-  MIN_WITHDRAWAL: 1000,
+  MIN_BET: 1_000_000_000,
+  MIN_DEPOSIT: 1_000_000_000,
+  MIN_WITHDRAWAL: 5_000_000_000,
   PLATFORM_FEE: 0.05,
 }))
 
@@ -65,7 +65,7 @@ function makeTxItems(count) {
   return Array.from({ length: count }, (_, i) => ({
     id: `tx-${i + 1}`,
     type: i % 2 === 0 ? 'deposit' : 'bet_placed',
-    amount: i % 2 === 0 ? 1000 : -500,
+    amount: i % 2 === 0 ? 1_000_000_000 : -500_000_000,
     created_at: new Date(Date.now() - i * 86400000).toISOString(),
   }))
 }
@@ -109,7 +109,7 @@ describe('profilePage', () => {
 
   it('renders page shell when authenticated', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.page--profile')).not.toBeNull()
     cleanup()
@@ -117,8 +117,8 @@ describe('profilePage', () => {
 
   it('renders balance card with formatted balance', async () => {
     store._state.token = 'tok'
-    store._state.balance = 100000
-    api.get.mockResolvedValue({ balance: 100000, items: [], prev: null })
+    store._state.balance = 100_000_000_000
+    api.get.mockResolvedValue({ balance: 100_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.balance-card')).not.toBeNull()
     expect(mockContainer.container.querySelector('.balance-card__value')).not.toBeNull()
@@ -127,7 +127,7 @@ describe('profilePage', () => {
 
   it('renders deposit and withdraw buttons', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.balance-deposit-btn')).not.toBeNull()
     expect(mockContainer.container.querySelector('.balance-withdraw-btn')).not.toBeNull()
@@ -136,7 +136,7 @@ describe('profilePage', () => {
 
   it('renders transactions section', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: makeTxItems(3), prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: makeTxItems(3), prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.tx-table')).not.toBeNull()
     const rows = mockContainer.container.querySelectorAll('.tx-row')
@@ -146,7 +146,7 @@ describe('profilePage', () => {
 
   it('shows empty state when no transactions', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 10000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 10_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.page-empty')).not.toBeNull()
     cleanup()
@@ -154,7 +154,7 @@ describe('profilePage', () => {
 
   it('shows load more button when cursor present', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: makeTxItems(5), prev: 'cursor-1' })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: makeTxItems(5), prev: 'cursor-1' })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.load-more-btn')).not.toBeNull()
     cleanup()
@@ -162,7 +162,7 @@ describe('profilePage', () => {
 
   it('hides load more when no cursor', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: makeTxItems(3), prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: makeTxItems(3), prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.load-more-btn')).toBeNull()
     cleanup()
@@ -170,7 +170,7 @@ describe('profilePage', () => {
 
   it('clicking deposit button shows deposit form', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     const depositBtn = mockContainer.container.querySelector('.balance-deposit-btn')
@@ -182,7 +182,7 @@ describe('profilePage', () => {
 
   it('clicking withdraw button shows withdraw form', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     const withdrawBtn = mockContainer.container.querySelector('.balance-withdraw-btn')
@@ -194,7 +194,7 @@ describe('profilePage', () => {
 
   it('toggling deposit button twice closes the form', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     const depositBtn = mockContainer.container.querySelector('.balance-deposit-btn')
@@ -207,7 +207,7 @@ describe('profilePage', () => {
 
   it('deposit form has quick amount buttons', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-deposit-btn').click()
@@ -219,21 +219,21 @@ describe('profilePage', () => {
 
   it('quick amount button sets deposit input value', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-deposit-btn').click()
-    mockContainer.container.querySelector('.stake-quick[data-amount="50"]').click()
+    mockContainer.container.querySelector('.stake-quick[data-amount="5"]').click()
 
     const input = mockContainer.container.querySelector('.balance-flow__input')
-    expect(input.value).toBe('50')
+    expect(input.value).toBe('5')
     cleanup()
   })
 
-  it('deposit confirm calls API with cents', async () => {
+  it('deposit confirm calls API with nanotons', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    api.post.mockResolvedValue({ widget_config: { apiKey: 'test' }, amount: 1000 })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
+    api.post.mockResolvedValue({ ton_deep_link: 'ton://transfer/EQ...', memo: 'abc123', amount_nanoton: 10_000_000_000, expires_at: new Date(Date.now() + 30 * 60_000).toISOString() })
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-deposit-btn').click()
@@ -242,13 +242,13 @@ describe('profilePage', () => {
     mockContainer.container.querySelector('.balance-flow__confirm').click()
 
     await flushPromises()
-    expect(api.post).toHaveBeenCalledWith('/v1/balance/deposit', { amount: 1000 })
+    expect(api.post).toHaveBeenCalledWith('/v1/balance/deposit', { amount: 10_000_000_000 })
     cleanup()
   })
 
   it('deposit error shows error message', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     api.post.mockRejectedValue(new ApiError(400, 'deposit-1', 'fail'))
     const cleanup = await renderPage()
 
@@ -264,39 +264,46 @@ describe('profilePage', () => {
     cleanup()
   })
 
-  it('withdraw confirm calls API with cents', async () => {
+  it('withdraw confirm calls API with nanotons and wallet address', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    api.post.mockResolvedValue({ withdrawal_id: 'w-1', amount: 5000, moonpay_widget_url: 'https://moonpay.test' })
+    store._state.balance = 50_000_000_000
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
+    api.post.mockResolvedValue({ withdrawal_id: 'w-1', amount: 50_000_000_000 })
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-withdraw-btn').click()
-    const input = mockContainer.container.querySelector('.balance-flow__input')
-    input.value = '50'
+    const amountInput = mockContainer.container.querySelector('.balance-flow__amount')
+    amountInput.value = '50'
+    const walletInput = mockContainer.container.querySelector('.balance-flow__wallet')
+    walletInput.value = 'EQDrjaLahLkMB-hMCmkzOyBuHJ186Kj3BbFJXwdFEEPayIGH'
     mockContainer.container.querySelector('.balance-flow__confirm').click()
 
     await flushPromises()
-    expect(api.post).toHaveBeenCalledWith('/v1/balance/withdraw', { amount: 5000 })
+    expect(api.post).toHaveBeenCalledWith('/v1/balance/withdraw', {
+      amount: 50_000_000_000,
+      wallet_address: 'EQDrjaLahLkMB-hMCmkzOyBuHJ186Kj3BbFJXwdFEEPayIGH',
+    })
     cleanup()
   })
 
   it('withdraw error shows specific error messages', async () => {
     store._state.token = 'tok'
-    store._state.balance = 50000
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    store._state.balance = 50_000_000_000
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     api.post.mockRejectedValue(new ApiError(400, 'withdraw-3', 'fail'))
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-withdraw-btn').click()
-    const input = mockContainer.container.querySelector('.balance-flow__input')
-    input.value = '50'
+    const amountInput = mockContainer.container.querySelector('.balance-flow__amount')
+    amountInput.value = '50'
+    const walletInput = mockContainer.container.querySelector('.balance-flow__wallet')
+    walletInput.value = 'EQDrjaLahLkMB-hMCmkzOyBuHJ186Kj3BbFJXwdFEEPayIGH'
     mockContainer.container.querySelector('.balance-flow__confirm').click()
 
     await flushPromises()
     const errorEl = mockContainer.container.querySelector('.balance-flow__error')
     expect(errorEl.hidden).toBe(false)
-    expect(errorEl.textContent).toBe('withdrawInsufficient')
+    expect(errorEl.textContent).toBe('withdrawFailed')
     cleanup()
   })
 
@@ -310,23 +317,23 @@ describe('profilePage', () => {
 
   it('updates balance from API response', async () => {
     store._state.token = 'tok'
-    store._state.balance = 10000
-    api.get.mockResolvedValue({ balance: 99900, items: [], prev: null })
+    store._state.balance = 10_000_000_000
+    api.get.mockResolvedValue({ balance: 99_900_000_000, items: [], prev: null })
     const cleanup = await renderPage()
-    expect(store.set).toHaveBeenCalledWith({ balance: 99900 })
+    expect(store.set).toHaveBeenCalledWith({ balance: 99_900_000_000 })
     cleanup()
   })
 
   it('cleanup removes event listeners without error', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(() => cleanup()).not.toThrow()
   })
 
   it('switching from deposit to withdraw replaces the form', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
 
     mockContainer.container.querySelector('.balance-deposit-btn').click()
@@ -340,59 +347,9 @@ describe('profilePage', () => {
 
   it('transactions section has title', async () => {
     store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: makeTxItems(1), prev: null })
+    api.get.mockResolvedValue({ balance: 50_000_000_000, items: makeTxItems(1), prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.tx-section__title').textContent).toBe('transactions')
-    cleanup()
-  })
-
-  it('renders email connect section', async () => {
-    store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    const cleanup = await renderPage()
-    expect(mockContainer.container.querySelector('.email-section')).not.toBeNull()
-    cleanup()
-  })
-
-  it('shows connect email button when email not set', async () => {
-    store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    const cleanup = await renderPage()
-    expect(mockContainer.container.querySelector('.email-connect-btn')).not.toBeNull()
-    cleanup()
-  })
-
-  it('shows email value when email is set', async () => {
-    store._state.token = 'tok'
-    store._state.email = 'user@example.com'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    const cleanup = await renderPage()
-    expect(mockContainer.container.querySelector('.email-connect-btn')).toBeNull()
-    expect(mockContainer.container.querySelector('.email-section__value').textContent).toBe('user@example.com')
-    cleanup()
-  })
-
-  it('clicking connect email shows email input', async () => {
-    store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    const cleanup = await renderPage()
-
-    mockContainer.container.querySelector('.email-connect-btn').click()
-    expect(mockContainer.container.querySelector('.email-connect-input')).not.toBeNull()
-    cleanup()
-  })
-
-  it('connect email cancel returns to initial state', async () => {
-    store._state.token = 'tok'
-    api.get.mockResolvedValue({ balance: 50000, items: [], prev: null })
-    const cleanup = await renderPage()
-
-    mockContainer.container.querySelector('.email-connect-btn').click()
-    expect(mockContainer.container.querySelector('.email-connect-input')).not.toBeNull()
-
-    mockContainer.container.querySelector('.email-connect-cancel').click()
-    expect(mockContainer.container.querySelector('.email-connect-input')).toBeNull()
-    expect(mockContainer.container.querySelector('.email-connect-btn')).not.toBeNull()
     cleanup()
   })
 
@@ -407,8 +364,8 @@ describe('profilePage', () => {
 
   it('does not show balance hint when balance is positive', async () => {
     store._state.token = 'tok'
-    store._state.balance = 10000
-    api.get.mockResolvedValue({ balance: 10000, items: [], prev: null })
+    store._state.balance = 10_000_000_000
+    api.get.mockResolvedValue({ balance: 10_000_000_000, items: [], prev: null })
     const cleanup = await renderPage()
     expect(mockContainer.container.querySelector('.balance-card__hint')).toBeNull()
     cleanup()
