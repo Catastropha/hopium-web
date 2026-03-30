@@ -556,16 +556,13 @@ function renderDetail(bet, wrapper) {
     }
   }
 
+  // Cleanup keyboard listener when detail panel is replaced or closed
+  function onDetailCleanup() {
+    window.removeEventListener('keydown', handleKeyShortcut)
+    window.removeEventListener('hopium:detail-cleanup', onDetailCleanup)
+  }
   window.addEventListener('keydown', handleKeyShortcut)
-
-  // Cleanup listener when detail is removed
-  const observer = new MutationObserver(() => {
-    if (!wrapper.contains(el)) {
-      window.removeEventListener('keydown', handleKeyShortcut)
-      observer.disconnect()
-    }
-  })
-  observer.observe(wrapper, { childList: true })
+  window.addEventListener('hopium:detail-cleanup', onDetailCleanup)
 
   wrapper.appendChild(el)
 }

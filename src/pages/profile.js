@@ -121,8 +121,8 @@ function renderTransactions(transactions) {
     return `<div class="page-empty"><p class="text-secondary">${t('noTransactions')}</p><button class="btn btn-primary page-empty__deposit">${t('deposit')}</button></div>`
   }
 
+  const txTypes = getTxTypes()
   const rows = transactions.map((tx) => {
-    const txTypes = getTxTypes()
     const config = txTypes[tx.type] || txTypes.deposit
     const amountClass = tx.amount >= 0 ? 'text-yes' : 'text-no'
     const amountStr = tx.amount >= 0

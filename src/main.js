@@ -136,6 +136,7 @@ function init() {
 
   // Detail panel management
   function openDetailPanel(content) {
+    window.dispatchEvent(new CustomEvent('hopium:detail-cleanup'))
     detailPanelInner.innerHTML = ''
     if (typeof content === 'string') {
       detailPanelInner.innerHTML = content
@@ -151,6 +152,7 @@ function init() {
   }
 
   function closeDetailPanel() {
+    window.dispatchEvent(new CustomEvent('hopium:detail-cleanup'))
     detailPanel.hidden = true
     appLayout.classList.add('no-panel')
     detailPanelInner.innerHTML = ''

@@ -35,6 +35,7 @@
   overflow-y: auto;
   background: var(--bg-surface);
   border-inline-start: 1px solid var(--border);
+  contain: layout style;
 }
 
 .detail-panel[hidden] {

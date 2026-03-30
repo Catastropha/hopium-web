@@ -70,9 +70,9 @@ describe('$ / $$', () => {
 })
 
 describe('escapeHtml', () => {
-  it('escapes angle brackets', () => {
+  it('escapes angle brackets and quotes', () => {
     expect(escapeHtml('<script>alert("xss")</script>')).toBe(
-      '&lt;script&gt;alert("xss")&lt;/script&gt;'
+      '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'
     )
   })
 
@@ -80,10 +80,9 @@ describe('escapeHtml', () => {
     expect(escapeHtml('a & b')).toBe('a &amp; b')
   })
 
-  it('does not alter quotes (textContent-based escaping)', () => {
-    // escapeHtml uses textContent → innerHTML, which does not escape quotes
-    const result = escapeHtml('"hello"')
-    expect(result).toBe('"hello"')
+  it('escapes quotes for safe attribute use', () => {
+    expect(escapeHtml('"hello"')).toBe('&quot;hello&quot;')
+    expect(escapeHtml("it's")).toBe('it&#39;s')
   })
 
   it('passes through safe strings unchanged', () => {

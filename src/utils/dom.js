@@ -46,9 +46,9 @@ export function $$(selector, parent = document) {
 
 /**
  * Escape HTML to prevent XSS.
+ * String-based — no DOM allocation. Also escapes quotes for safe attribute use.
  */
+const _escMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 export function escapeHtml(str) {
-  const div = document.createElement('div')
-  div.textContent = str
-  return div.innerHTML
+  return String(str).replace(/[&<>"']/g, c => _escMap[c])
 }

@@ -120,6 +120,18 @@ Defined as tokens in `tokens.css`:
 - **Store reactivity:** `store.on(key, fn)` returns an unsubscribe function. Auth state (token, refresh token, user ID, username, photo URL) persisted to localStorage.
 - **TON formatting:** All `formatTon*` functions take nanotons. Input fields accept TON and convert with `Math.round(parseFloat(value) * 1_000_000_000)`.
 
+### Deployment
+
+Builds with Vite, syncs to S3, invalidates CloudFront. Requires AWS CLI with a named profile.
+
+```bash
+# Live
+export AWS_PROFILE=live-hopium && _devops/deploy.sh live
+
+# Dev
+export AWS_PROFILE=dev-hopium && _devops/deploy.sh dev
+```
+
 ### Lambda@Edge — OG Tag Injection
 
 A Lambda@Edge function serves server-rendered HTML with Open Graph meta tags to social media crawlers. This is necessary because the SPA sets meta tags client-side via JS, which crawlers (Twitter, Facebook, Telegram, Discord, etc.) don't execute.
