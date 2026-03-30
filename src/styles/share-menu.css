@@ -33,7 +33,7 @@
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: color 100ms, background 100ms;
+  transition: color 100ms var(--ease-out), background-color 100ms var(--ease-out);
 }
 
 .share-menu__item:hover {
@@ -82,7 +82,7 @@
   border: none;
   cursor: pointer;
   flex-shrink: 0;
-  transition: color 100ms, background 100ms;
+  transition: color 100ms var(--ease-out), background-color 100ms var(--ease-out);
 }
 
 .bet-card__share:hover {
@@ -95,11 +95,3 @@
   outline-offset: 2px;
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .share-menu,
-  .share-menu__item,
-  .bet-card__share {
-    transition: none;
-  }
-}

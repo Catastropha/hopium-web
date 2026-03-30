@@ -7,10 +7,6 @@
   margin-block-end: var(--space-xl);
 }
 
-.leaderboard-content {
-  /* container for podium + table */
-}
-
 .leaderboard-footer {
   display: flex;
   justify-content: center;
@@ -139,10 +135,6 @@
 
 .leaderboard-cell--winrate {
   font-variant-numeric: tabular-nums;
-}
-
-.leaderboard-cell--streak {
-  /* streak column */
 }
 
 .leaderboard-cell--profit {

@@ -495,10 +495,6 @@
   color: var(--text-secondary);
 }
 
-.bet-detail__retry {
-  /* inherits .btn .btn-secondary */
-}
-
 /* User payout display for resolved bets */
 .bet-detail__user-payout {
   display: flex;

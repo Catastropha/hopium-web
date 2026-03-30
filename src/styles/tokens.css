@@ -39,10 +39,13 @@
   --reddit: #FF4500;
   --overlay: rgba(0, 0, 0, 0.7);
   --shimmer: oklch(100% 0 0 / 0.04);
+  --z-filter: 20;
   --z-dropdown: 30;
   --z-panel: 40;
+  --z-sidebar: 50;
   --z-tooltip: 60;
   --z-banner: 100;
+  --z-toast: 200;
   --z-overlay: 300;
   --z-share-menu: 1000;
   --z-modal: 2000;

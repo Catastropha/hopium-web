@@ -198,10 +198,6 @@
   width: 100%;
 }
 
-.tx-row {
-  /* table row */
-}
-
 .tx-row:hover .tx-cell {
   background: var(--bg-hover);
 }

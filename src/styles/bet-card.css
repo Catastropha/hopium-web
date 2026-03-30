@@ -67,9 +67,6 @@
   border-color: var(--no-soft);
 }
 
-.bet-card--popular {
-}
-
 .bet-card--popular .bet-card__pool {
   color: var(--cat-crypto);
   font-weight: 600;

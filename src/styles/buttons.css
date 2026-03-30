@@ -15,6 +15,10 @@
   border: 1px solid transparent;
 }
 
+.btn:active:not(:disabled) {
+  opacity: 0.85;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

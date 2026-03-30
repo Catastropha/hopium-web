@@ -13,7 +13,7 @@
   padding-block: var(--space-xl) var(--space-lg);
   background: var(--bg-primary);
   border-inline-end: 1px solid var(--border);
-  z-index: 50;
+  z-index: var(--z-sidebar);
 }
 
 .sidebar__logo {
@@ -108,7 +108,7 @@
   pointer-events: none;
   opacity: 0;
   z-index: var(--z-tooltip);
-  transition: opacity 150ms ease-out 400ms;
+  transition: opacity 150ms var(--ease-out) 400ms;
 }
 
 .sidebar [data-tooltip]:hover::after {

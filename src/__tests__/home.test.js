@@ -36,6 +36,7 @@ vi.mock('../constants.js', () => ({
   API_BASE: 'https://api.test.com',
   CATEGORIES: ['Sports', 'Politics', 'Crypto', 'Culture', 'Tech'],
   CATEGORY_COLORS: { Crypto: '#F59E0B', Sports: '#22C55E' },
+  NANOTON: 1_000_000_000,
   MIN_BET: 100,
   PLATFORM_FEE: 0.05,
 }))

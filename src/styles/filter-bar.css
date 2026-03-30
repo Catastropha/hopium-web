@@ -3,7 +3,7 @@
 .filter-bar-wrap {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-filter);
   background: var(--bg-primary);
   padding-block: var(--space-md);
   margin-block-end: var(--space-lg);

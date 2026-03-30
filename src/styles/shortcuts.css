@@ -69,6 +69,10 @@
   border-block-end: 1px solid var(--border-subtle);
 }
 
+.shortcuts__row:last-child {
+  border-block-end: none;
+}
+
 .shortcuts__key {
   display: inline-flex;
   align-items: center;

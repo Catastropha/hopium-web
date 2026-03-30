@@ -7,7 +7,7 @@ import { localize, t } from '../i18n.js'
 import { store } from '../store.js'
 import { api, ApiError } from '../api.js'
 import { router } from '../router.js'
-import { CATEGORIES, CATEGORY_COLORS } from '../constants.js'
+import { CATEGORIES, CATEGORY_COLORS, NANOTON } from '../constants.js'
 import { createOddsBar } from '../components/odds-bar.js'
 import { createBetDetail } from '../components/bet-detail.js'
 import { shareBet, closeShareMenu, handleShareClick } from '../components/share-menu.js'
@@ -55,7 +55,7 @@ function renderBetCard(bet, selectedId) {
   const hoursLeft = (new Date(bet.resolution_date) - Date.now()) / 3_600_000
   const isHot = hoursLeft > 0 && hoursLeft < 24
   const isClosingSoon = hoursLeft > 0 && hoursLeft < 6
-  const isBigPool = totalPool >= 10000
+  const isBigPool = totalPool >= 10_000 * NANOTON
   const hasPosition = bet.user_position_total != null && bet.user_position_total > 0
 
   let stateClasses = ''
