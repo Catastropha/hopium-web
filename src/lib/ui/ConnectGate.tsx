@@ -5,11 +5,16 @@ import { useSession } from '@/lib/auth/hook';
 
 /**
  * Renders `children` only when an authenticated session exists. Otherwise
- * shows a connect button and a short explainer. Pages wrap the action area
- * (bet form, stake form, create form) — they don't replace the whole page.
+ * shows a TON Connect button and a short explainer. Pages wrap the action
+ * area (bet form, stake form, create form) — they don't replace the whole
+ * page.
  *
- * The Telegram Login Widget mounts into #telegram-login-host once the user
- * clicks the TON Connect button and authorizes — see lib/auth/hook.ts.
+ * Scaffolding note: this component does NOT yet complete the auth flow on
+ * its own. `lib/auth/hook.ts::useLogin` is defined but currently has no
+ * caller — wiring it up (load widget → await TON Connect proof → POST to
+ * `/v1/auth/telegram`) is Phase 4 integration work. The `#telegram-login-
+ * host` anchor is rendered here so that work only has to add an effect
+ * plus a "Sign in with Telegram" trigger, not restructure the component.
  */
 interface Props {
   children: ReactNode;

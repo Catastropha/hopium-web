@@ -85,7 +85,7 @@ Every `page/{name}/` MUST follow one of these two shapes and **nothing else**:
 
 ```
 page/{name}/
-├── page.tsx                     # default export UNWELCOME — named export `Page`
+├── page.tsx                     # named export `<Name>Page` (CreatePage, StakePage…). No default exports.
 ├── type.ts                      # OPTIONAL — page-local types
 └── {Component}.tsx              # OPTIONAL — page-local sub-components
 ```

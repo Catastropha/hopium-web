@@ -36,6 +36,10 @@ export function useSession(): StoredSession | null {
  *      for Mini-App initData.
  *   3. Pull the TON Connect proof off the current wallet.
  *   4. POST both to `/v1/auth/telegram` with `source: 'web'`.
+ *
+ * Phase-4 integration gap: nothing in the UI calls this hook's `.mutate()`
+ * yet, and hopium-api does not yet expose `/v1/auth/telegram`. Wiring
+ * (trigger from `<ConnectGate>`, add the backend route) is the next step.
  */
 export function useLogin(source: Source = 'web') {
   const qc = useQueryClient();

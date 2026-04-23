@@ -34,6 +34,8 @@ type GlobalWithCallback = typeof globalThis & {
   [GLOBAL_CALLBACK]?: (user: TelegramWidgetUser) => void;
 };
 
+let pending: ((err: Error) => void) | null = null;
+
 export function loginWithTelegram(): Promise<TelegramWidgetUser> {
   return new Promise((resolve, reject) => {
     if (typeof window === 'undefined') {
@@ -46,7 +48,16 @@ export function loginWithTelegram(): Promise<TelegramWidgetUser> {
       return;
     }
 
+    // A previous in-flight call must be rejected before we overwrite the
+    // global callback — otherwise its caller hangs forever on a Promise
+    // that will never resolve.
+    if (pending) {
+      pending(new Error('loginWithTelegram superseded by a newer call'));
+    }
+    pending = reject;
+
     (globalThis as GlobalWithCallback)[GLOBAL_CALLBACK] = (user) => {
+      pending = null;
       resolve(user);
     };
 
@@ -63,10 +74,14 @@ export function loginWithTelegram(): Promise<TelegramWidgetUser> {
     script.setAttribute('data-userpic', 'false');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-onauth', `${GLOBAL_CALLBACK}(user)`);
-    script.onerror = () => reject(new Error('Failed to load Telegram widget'));
+    script.onerror = () => {
+      pending = null;
+      reject(new Error('Failed to load Telegram widget'));
+    };
 
     const host = document.getElementById('telegram-login-host');
     if (!host) {
+      pending = null;
       reject(new Error('No #telegram-login-host element mounted'));
       return;
     }

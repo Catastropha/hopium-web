@@ -23,13 +23,12 @@ export function StakePage() {
         subtitle={`Minimum ${ECON.STAKING_MIN_AMOUNT_TON} TON · ${ECON.STAKING_LOCK_DAYS}-day lock`}
       />
       <div className="grid gap-6 md:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-4">
+        <div>
           <CreatorBonusHint />
-          {session && <StakeSummary />}
         </div>
         <aside>
           <ConnectGate cta="Connect your wallet to stake TON">
-            {session && <StakeForm currentStaked="0" />}
+            {session && <StakeBody />}
           </ConnectGate>
         </aside>
       </div>
@@ -37,7 +36,7 @@ export function StakePage() {
   );
 }
 
-function StakeSummary() {
+function StakeBody() {
   const { data, isPending, isError } = useMyStake();
   if (isPending) return <FullScreenSpinner />;
   if (isError) {
@@ -53,19 +52,20 @@ function StakeSummary() {
   const staked = data?.amount ?? '0';
 
   return (
-    <Card>
-      <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-wide text-fg-muted">
-        <Wallet size={14} /> Your stake
-      </div>
-      <div className="flex items-baseline gap-2">
+    <div className="flex flex-col gap-4">
+      <Card>
+        <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-wide text-fg-muted">
+          <Wallet size={14} /> Your stake
+        </div>
         <TonAmount amount={staked} className="text-4xl font-semibold tracking-tight" />
-      </div>
-      {data?.locked_until && (
-        <p className="mt-2 text-sm text-fg-muted">
-          Locked until {formatDate(data.locked_until, { withTime: true })}
-        </p>
-      )}
-    </Card>
+        {data?.locked_until && (
+          <p className="mt-2 text-sm text-fg-muted">
+            Locked until {formatDate(data.locked_until, { withTime: true })}
+          </p>
+        )}
+      </Card>
+      <StakeForm currentStaked={staked} />
+    </div>
   );
 }
 
