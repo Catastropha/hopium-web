@@ -1,143 +1,135 @@
-# Hopium Web
+# hopium-web — Claude context
 
-Parimutuel prediction market web client. Standalone website sharing the same backend and user accounts as the Telegram Mini App.
+## Product concept
 
-## Currency
+hopium.bet is a Telegram-first decentralized prediction market factory on TON.
+This repo is the **public web app** — a static Vite + React + TS + Tailwind
+SPA that runs outside Telegram. It serves two overlapping audiences:
 
-All amounts from the API are in **nanotons** (integer, 1 TON = 1,000,000,000). Display as `X.XX TON` using `formatTon(nanotons)`. Compact display uses `formatTonCompact(nanotons)` (e.g. "15K TON"). Share text and OG tags use `formatPoolCompact(nanotons)` for pool sizes.
+1. **Visitors** landing from organic search / social — see the pitch, read
+   the docs, click "Open in Telegram" to launch `@hopiumbet_bot` / the TMA.
+2. **Logged-in users** — same feature surface as the Telegram Mini App
+   (browse markets, place bets, stake, vote, view leaderboard) rendered
+   desktop-first with a top nav + main column layout.
 
-`NANOTON = 1_000_000_000`, `MIN_BET = 1_000_000_000` (1 TON), `MIN_DEPOSIT = 1_000_000_000` (1 TON), `MIN_WITHDRAWAL = 5_000_000_000` (5 TON). All in nanotons.
+It talks to:
 
-## Auth
+1. **hopium-api** (`../hopium-api`) — REST backend over `VITE_API_BASE_URL`.
+2. **TON Connect 2.0** — wallet connection + signed proofs + transaction
+   sending.
+3. **Telegram Login Widget** (`telegram.org/js/telegram-widget.js`) — for
+   binding a Telegram identity to the session when the user is not inside
+   the TMA.
 
-Web users authenticate via **web-code** — a 6-character alphanumeric code generated in the TMA. Single-step flow: enter code → authenticated. The login flow renders **inline in the bet detail panel** when an unauthenticated user clicks an outcome, preserving context (selected outcome stays highlighted, stake section appears immediately after auth). The standalone `/login` page uses the same web-code flow.
+The web never holds secrets, never talks to RPC directly, and never writes
+to a database. It is a rendering + action layer: read materialized state
+from the API, push signed transactions via TON Connect.
 
-The code is generated via `POST /v1/auth/web-code` (TMA-side, requires TMA auth) and validated via `POST /v1/auth/web-code/validate` (web-side, no auth required). Codes are 6 uppercase alphanumeric characters, single-use, expire in 5 minutes.
+## Surfaces
 
-Mobile visitors see the full code input form (not a TMA redirect). A "On mobile? Open in Telegram" link appears at the bottom of the login card.
+Public (no auth):
 
-## Payments
+1. `/` — Landing: hero, features, how-it-works, CTA to open TMA
+2. `/docs` — Docs index
+3. `/docs/getting-started` — First-market walkthrough
+4. `/docs/staking` — Stake mechanics + 500 TON creator bonus
+5. `/docs/voting` — Voting and resolution flow
+6. `/docs/privacy` — Privacy policy
+7. `/docs/terms` — Terms of use
 
-- **Deposits:** TON deep link. `POST /v1/balance/deposit` returns `{ ton_deep_link, memo, amount_nanoton, expires_at }`. The deep link opens the user's TON wallet (Tonkeeper / Telegram Wallet). Deposit info (memo, expiry countdown) shown inline. Balance refreshed on `visibilitychange`.
-- **Withdrawals:** Direct TON transfer. `POST /v1/balance/withdraw` with `{ amount, wallet_address }` returns `{ withdrawal_id, amount }`. User provides their TON wallet address (48-67 chars). `GET /v1/balance/withdraw/{id}` returns `ton_tx_hash` for explorer link.
+Dashboard (reads public, writes require session):
 
-## Notifications
+8. `/markets` — Live markets list + AI-suggested topics
+9. `/create` — Create Market: tier picker, outcome editor, 19 TON confirm
+10. `/market/:address` — Market detail: outcomes, betting card, vote panel
+11. `/mine` — My Bets / My Markets tabs
+12. `/leaderboard` — Weekly + all-time ladder
+13. `/stake` — Stake / withdraw / vote history
 
-Bell icon in sidebar with unread badge. `GET /v1/notification/` (paginated). `POST /v1/notification/read` marks all read. Unread count fetched on app load and stored in `store.unreadNotifications`.
+Desktop-first; the layout degrades gracefully to tablet / phone widths.
 
-## Design Context
+## Auth model
 
-### Users
+Same two-factor identity as the TMA (matches hopium-api's identity contract):
 
-Desktop-first audience on laptops and large screens. Mix of existing TMA users wanting a richer experience and new users discovering Hopium outside Telegram. Sessions are 2-10 minutes — they tab between Hopium and their news sources, scanning markets, finding conviction, staking fast, and tracking positions. They expect information density, keyboard navigation, and snappy interactions.
+1. **Telegram identity** — via the Telegram Login Widget when outside the
+   TMA. The widget returns an HMAC-signed blob `{id, first_name, ...,
+   auth_date, hash}` which we forward to `/v1/auth/telegram` with
+   `source: 'web'`. The backend must treat the widget signature and
+   Mini-App `initData` signature as equivalent identity proofs.
+2. **TON Connect proof** — wallet signs `ton-proof-item-v2/...` payload.
 
-**Job to be done:** "Scan markets, find conviction, stake fast, track positions — without switching apps."
+Both are POSTed to `/v1/auth/telegram` → backend returns `session_token`
+(opaque, 30-day TTL). Token goes in the `Authorization: Bearer <token>`
+header on every subsequent API call. Stored in `localStorage` keyed on
+`wallet_address`.
 
-### Brand Personality
+Visitors who don't complete this flow can still browse public reads:
+markets list, market detail, leaderboard, docs. Writes require both
+Telegram Login *and* wallet proof.
 
-**Bold. Sharp. Unapologetic.** The web version amplifies the TMA brand with more room — bigger odds bars, richer detail panels, visible portfolio metrics. Confidence is quieter here because the density does the talking.
+## Source tag
 
-- Labels are 1-3 words. Descriptions are 1 sentence max.
-- Desktop users get more inline context (resolution criteria visible, not behind a tap).
-- Every action feels like pressing Enter on a terminal command.
+Every session the web creates declares `source: 'web'` (vs. `'tma'` for the
+Telegram Mini App and `'bot'` for bot-originated sessions). Part of the
+wire contract — see hopium-api CLAUDE.md.
 
-### Aesthetic Direction
+## Error envelope
 
-**Crypto-native with attitude** — clean data presentation with bold personality. Think Polymarket's data clarity but with a strong point of view. Not a neutral spreadsheet with a logo on top.
+Every non-2xx response from hopium-api is `{'detail': {'code':
+'<ns>:<slug>-<digit>'}}`. The api client in `src/lib/api/client.ts` parses
+this into an `ApiError` carrying the `code`. UI renders a code-specific
+message. **Never surface the raw code to users** — map to a user-readable
+string via `src/lib/api/error.ts`.
 
-- **Dark theme only** (dark by default, no light mode at launch). `--bg-primary: #0c0d10`.
-- **System font stack** — zero load cost, OS-native feel.
-- **4px base unit** spacing grid. All spacing is a multiple of 4px.
-- **Green (#22C55E) = YES/positive.** **Red (#EF4444) = NO/negative.** These are semantic — used only for data-carrying elements.
-- **Brand gradient:** `linear-gradient(135deg, #22C55E, #06B6D4)`.
-- Category accents used sparingly (dots, chip text — not large fills).
-- Motion is purposeful: 100-300ms, expo-out enters, ease-in exits. Respect `prefers-reduced-motion`.
+## Chain constants
 
-**Anti-references:**
-- Polymarket's blandness — Hopium has a point of view.
-- Crypto exchange dashboards — no order books, no candlesticks. This is prediction markets, not trading.
-- Generic SaaS dashboards — no sidebar with 30 nav items, no breadcrumbs, no settings icons everywhere.
+Mirror `../hopium-contracts/wrappers/opcodes.ts` into `src/lib/chain/opcode.ts`.
+The web builds TON Connect messages with the canonical OP / TIER / PHASE
+values. Any opcode drift breaks transactions silently — treat this mirror
+as wire-locked.
 
-**References:**
-- Polymarket's data clarity and information hierarchy (but with more visual personality).
-- The confidence and density of a Bloomberg terminal (but accessible and not intimidating).
+Economic constants (`CREATION_FEE_TON = 19`, `STAKING_MIN_AMOUNT_TON = 10`,
+`CREATOR_BONUS_THRESHOLD_TON = 500`) are surfaced in UI text and must stay
+in lockstep with the contract constants.
 
-### Design Principles
+## Env vars
 
-1. **Desktop-first, mobile-accessible.** Designed for >=1024px with pointer interactions, hover states, and keyboard shortcuts. Mobile visitors see the full site with a responsive layout and a dismissable Telegram CTA banner. The TMA remains the primary mobile experience, but shared links and browsing work on any device.
+Frontend env vars are read from Vite's `import.meta.env` with the `VITE_`
+prefix. See `.env.example`:
 
-2. **Speed is the feature.** Optimistic UI everywhere. Skeleton screens over spinners. URL-driven state. Transitions under 200ms. Prefetch on hover.
+- `VITE_API_BASE_URL` — hopium-api root, e.g. `https://api.hopium.bet`
+- `VITE_TONCONNECT_MANIFEST_URL` — URL the wallet fetches to learn the app
+  identity. The manifest itself is served from `public/tonconnect-manifest.json`.
+- `VITE_TON_NETWORK` — `mainnet` / `testnet`
+- `VITE_FACTORY_ADDRESS` — deployed Factory address (friendly form)
+- `VITE_STAKING_ADDRESS` — deployed Staking address (friendly form)
+- `VITE_BOT_USERNAME` — `hopiumbet_bot` — used for Telegram Login Widget +
+  share / "Open in Telegram" deeplinks
+- `VITE_SENTRY_DSN` — optional error reporting
 
-3. **Information density, amplified.** Two-panel layout on desktop (list + detail). Bet cards show more inline. Tables where appropriate. Filters always visible — never behind a hamburger.
+## Running locally
 
-4. **Confidence through clarity.** Every action has feedback. States are explicit. Auth state is clear. URLs are human-readable.
-
-5. **Bold restraint.** One accent color at a time. The data IS the design — odds bars, P&L numbers, pool sizes provide the visual interest. Don't compete with decoration.
-
-### Accessibility
-
-Target **WCAG 2.1 AAA** where feasible, with AA as the hard floor.
-
-- All semantic colors must meet **4.5:1 contrast** against surfaces (7:1 preferred for AAA).
-- Secondary visual cues beyond color for all color-coded information (YES/NO labels, +/- prefixes, text labels alongside status colors).
-- Focus ring: `2px solid var(--focus-ring)`, visible on `:focus-visible` only.
-- Full keyboard operability: j/k navigation, Enter to open, Escape to close, number keys for tabs, y/n for outcomes.
-- Skip link as first focusable element. Logical tab order: sidebar -> filters -> bet list -> detail panel.
-- `aria-live="polite"` for odds updates, balance changes, payout previews, toasts.
-- Odds bar uses `role="meter"` with proper ARIA attributes.
-- Route changes announced to screen readers.
-- All animations inside `@media (prefers-reduced-motion: no-preference)`.
-- Use `margin-inline-start` over `margin-left` (RTL-ready).
-- Modals (keyboard shortcuts overlay) have focus traps, `role="dialog"`, `aria-modal="true"`, and restore focus on close.
-- Login code input uses `aria-label` for accessibility.
-- Form inputs use `aria-labelledby` pointing to section headings.
-
-### Z-Index Scale
-
-Defined as tokens in `tokens.css`:
-
-| Token | Value | Usage |
-|---|---|---|
-| `--z-dropdown` | 30 | Filter bar country dropdown |
-| `--z-panel` | 40 | Detail panel overlay on tablet/mobile |
-| `--z-tooltip` | 60 | Sidebar tooltips |
-| `--z-banner` | 100 | Telegram CTA banner |
-| `--z-overlay` | 300 | Keyboard shortcuts overlay |
-| `--z-share-menu` | 1000 | Share popover menu |
-
-### Tech Stack
-
-- **Vanilla JS + Vite** — no framework, matching the TMA stack.
-- **CSS custom properties** for theming (tokens defined in `src/styles/tokens.css`).
-- **System font stack** — no custom fonts.
-- **JS bundle < 80KB gzipped, CSS < 10KB gzipped.**
-- **No large dependencies.** `Intl` for formatting, native `fetch`, no UI framework, no state management library.
-
-### Key Patterns
-
-- **Cleanup pattern:** Page handlers return a cleanup function. Event listeners, store subscriptions, and timers are pushed to a `cleanups` array and executed on route change.
-- **Inline HTML:** `html` template literal from `dom.js` creates DOM elements. User data always escaped with `escapeHtml()`.
-- **Store reactivity:** `store.on(key, fn)` returns an unsubscribe function. Auth state (token, refresh token, user ID, username, photo URL) persisted to localStorage.
-- **TON formatting:** All `formatTon*` functions take nanotons. Input fields accept TON and convert with `Math.round(parseFloat(value) * 1_000_000_000)`.
-
-### Deployment
-
-Builds with Vite, syncs to S3, invalidates CloudFront. Requires AWS CLI with a named profile.
-
-```bash
-# Live
-export AWS_PROFILE=live-hopium && _devops/deploy.sh live
-
-# Dev
-export AWS_PROFILE=dev-hopium && _devops/deploy.sh dev
+```
+npm install
+npm run dev        # Vite dev server on :5174
+npm run build      # outputs static dist/
+npm run typecheck  # tsc --noEmit
+npm test           # vitest
 ```
 
-### Lambda@Edge — OG Tag Injection
+## What NOT to do
 
-A Lambda@Edge function serves server-rendered HTML with Open Graph meta tags to social media crawlers. This is necessary because the SPA sets meta tags client-side via JS, which crawlers (Twitter, Facebook, Telegram, Discord, etc.) don't execute.
-
-**Source:** `hopium-tf/projects/web/lambda/og-tags/index.mjs` (lives in the Terraform repo, not this repo).
-
-**How it works:** Attached to the CloudFront distribution's `origin-request` event. When a request for `/bet/:id` or `/share/:id` arrives with a crawler User-Agent, the Lambda fetches bet data from the Hopium API and returns minimal HTML with OG/Twitter Card/JSON-LD tags. Non-crawler requests pass through to S3 unchanged.
-
-**Drift risk:** The Lambda has its own copies of `localize()`, `buildDescription()`, `esc()`, and the OG meta tag template. These mirror logic in `src/utils/seo.js` and `src/components/share-menu.js`. If you change the OG tag format, share text structure, TON formatting, or localization fallback logic on the web side, **update the Lambda too** — it's a separate Node.js runtime and cannot import from the Vite bundle. The Lambda needs to be updated to use TON formatting (pool amounts are now nanotons).
+- Do **not** call TON RPC from the frontend. All chain reads go through
+  hopium-api; all writes go through TON Connect.
+- Do **not** store session tokens anywhere besides `localStorage`. No
+  cookies, no IndexedDB, no third-party storage.
+- Do **not** add a second auth path. Telegram identity + TON proof is the
+  only way in — matches the backend contract.
+- Do **not** depend on Telegram WebApp features (theme vars, `MainButton`,
+  haptics). Those belong to hopium-tma; this repo renders in a normal
+  browser without that runtime.
+- Do **not** use a third-party UI kit (MUI, Chakra, shadcn). Tailwind +
+  small hand-written primitives in `src/lib/ui/` only.
+- Do **not** import from `src/page/*` into `src/lib/*` or `src/core/*`.
+  See CONVENTION.md §3-Layer Architecture.

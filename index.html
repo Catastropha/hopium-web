@@ -1,81 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0c0d10" />
-  <meta name="color-scheme" content="dark" />
-  <title>Hopium — Prediction Markets</title>
-  <meta name="description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with TON." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://hopium.bet/" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Hopium" />
-  <meta property="og:title" content="Hopium — Prediction Markets" />
-  <meta property="og:description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with TON." />
-  <meta property="og:url" content="https://hopium.bet/" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="https://hopium.bet/og.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hopium — Prediction Markets" />
-  <meta name="twitter:description" content="Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with TON." />
-  <meta name="twitter:image" content="https://hopium.bet/og.png" />
-
-  <!-- GEO & Discovery -->
-  <meta name="geo.placename" content="Global" />
-  <meta name="geo.region" content="001" />
-  <meta name="ICBM" content="0, 0" />
-
-  <!-- Resource hints -->
-  <link rel="dns-prefetch" href="https://live-api.hopium.bet" />
-  <link rel="preconnect" href="https://live-api.hopium.bet" crossorigin />
-
-  <!-- Icons & PWA -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="application-name" content="Hopium" />
-  <meta name="apple-mobile-web-app-title" content="Hopium" />
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Hopium",
-    "url": "https://hopium.bet",
-    "description": "Parimutuel prediction market platform. Bet on real-world outcomes in crypto, sports, politics, culture, and tech with TON.",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "browserRequirements": "Requires JavaScript. Desktop browsers recommended.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "TON"
-    },
-    "creator": {
-      "@type": "Organization",
-      "name": "Hopium",
-      "url": "https://hopium.bet"
-    }
-  }
-  </script>
-
-</head>
-<body>
-  <div id="app"></div>
-  <noscript>
-    <div style="color:#e4e6eb;background:#0c0d10;padding:48px 24px;text-align:center;font-family:system-ui;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
-      <h1 style="font-size:22px;font-weight:700">Hopium — Prediction Markets</h1>
-      <p style="color:#7d818a;max-width:400px">Parimutuel prediction markets on real-world events. Bet on crypto, sports, politics, culture, and tech outcomes with TON.</p>
-      <p style="color:#565860;font-size:13px">This application requires JavaScript to run.</p>
-    </div>
-  </noscript>
-  <script type="module" src="/src/main.js"></script>
-</body>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0d12" />
+    <meta name="description" content="hopium.bet — decentralized prediction markets on TON. Create a market in 60 seconds." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>hopium.bet</title>
+  </head>
+  <body class="bg-bg text-fg antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
