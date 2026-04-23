@@ -34,21 +34,50 @@ export class ApiError extends Error {
 }
 
 /**
- * Map a machine `code` to a user-readable string. Unknown codes fall back
- * to a neutral message so we never leak internal slugs into the UI.
+ * Map a machine `code` to a user-readable string.
+ *
+ * Keys here MUST match the set hopium-api actually emits — see
+ * `app/lib/identity/service.py` and each `app/apps/{name}/route.py` for
+ * the authoritative list. Unknown codes fall through to a neutral
+ * message; never surface the raw code.
+ *
+ * This is the web-flavoured copy: it assumes the user is in a browser
+ * and can re-run the Telegram Login Widget. hopium-tma keeps a parallel
+ * map with Mini-App-appropriate wording.
  */
 const ERROR_COPY: Record<string, string> = {
-  'auth:invalid-session-1': 'Your session expired. Reconnect your wallet.',
-  'auth:init-data-invalid-1': 'Telegram login was not accepted. Try again.',
-  'auth:ton-proof-invalid-1': 'Wallet signature did not verify. Try reconnecting.',
-  'market:not-found-1': 'This market no longer exists.',
-  'market:invalid-tier-1': 'Pick a valid tier: 1, 3, 7, or 14 days.',
-  'market:invalid-outcome-count-1': 'Markets need between 2 and 8 outcomes.',
-  'bet:market-closed-1': 'Betting has ended for this market.',
-  'bet:outcome-out-of-range-1': 'That outcome is not on this market.',
-  'stake:below-minimum-1': 'Minimum stake is 10 TON.',
-  'stake:locked-1': 'Stake is still locked. Check the unlock date.',
-  'rate:too-many-1': 'Slow down — too many requests.',
+  // Telegram identity (Login Widget HMAC, user parsing)
+  'auth:telegram-0': 'Telegram sign-in was rejected. Sign in with Telegram again.',
+  'auth:telegram-1': 'Telegram sign-in is stale. Sign in with Telegram again.',
+  'auth:telegram-2': "Telegram didn't return a user id. Sign in again.",
+
+  // TON Connect proof
+  'auth:ton-proof-0': 'Wallet proof is stale. Reconnect your wallet.',
+  'auth:ton-proof-1': 'Wallet address format is off. Reconnect your wallet.',
+  'auth:ton-proof-2': 'Wallet public key format is off. Reconnect your wallet.',
+  'auth:ton-proof-3': 'Wallet signature format is off. Reconnect your wallet.',
+  'auth:ton-proof-4': 'Wallet signature did not verify. Reconnect your wallet.',
+
+  // Session
+  'auth:session-0': 'Your session expired. Sign in again.',
+  'auth:session-1': 'Please sign in to continue.',
+
+  // Source mismatch — only reachable on a client bug
+  'auth:source-0': 'Unsupported sign-in path.',
+
+  // Domain
+  'market:not-found-0': 'This market no longer exists.',
+  'market:tier-0': 'Pick a valid tier: 1, 3, 7, or 14 days.',
+  'bet:not-betting-0': 'Betting has ended for this market.',
+  'bet:outcome-0': 'That outcome is not on this market.',
+  'stake:below-min-0': 'Minimum stake is 10 TON.',
+  'user:not-found-0': "Your account isn't linked yet. Sign in again.",
+
+  // Chain availability (addresses unset pre-deploy)
+  'chain:factory-unset-0': "The market factory isn't live yet. Try again soon.",
+  'chain:staking-unset-0': "Staking isn't live yet. Try again soon.",
+
+  // Catch-all
   'internal:error': 'Something broke on our side. Try again in a moment.',
 };
 
